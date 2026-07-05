@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased selection:bg-gold-400 selection:text-indigo-950;
+  }
+}
+
+.luxury-gradient {
+  background: linear-gradient(135deg, #0d1137 0%, #1a237e 100%);
+}
