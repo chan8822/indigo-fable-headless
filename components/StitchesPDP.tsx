@@ -141,7 +141,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
               <div className="flex gap-3">
                 <button
                   onClick={() => setIsTrilogy(false)}
-                  className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
+                  className={`flex-1 py-3 border text-xs uppercase tracking-wider transition touch-manipulation ${
                     !isTrilogy
                       ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
                       : 'border-stone-200 text-stone-600 hover:border-black'
@@ -151,7 +151,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                 </button>
                 <button
                   onClick={() => setIsTrilogy(true)}
-                  className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
+                  className={`flex-1 py-3 border text-xs uppercase tracking-wider transition touch-manipulation ${
                     isTrilogy
                       ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
                       : 'border-stone-200 text-stone-600 hover:border-black'
@@ -173,7 +173,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                   <button
                     key={size}
                     onClick={() => setActiveSize(size)}
-                    className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
+                    className={`flex-1 py-3 border text-xs uppercase tracking-wider transition touch-manipulation ${
                       activeSize === size
                         ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
                         : 'border-stone-200 text-stone-600 hover:border-black'
@@ -189,7 +189,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
           {/* Add to Bag Button */}
           <button 
             onClick={handleAddToCart}
-            className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.25em] font-semibold py-4.5 rounded transition flex justify-center items-center gap-2 mb-3 shadow-md"
+            className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.25em] font-semibold py-4.5 rounded transition flex justify-center items-center gap-2 mb-3 shadow-md touch-manipulation"
           >
             {isFragrance && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
           </button>
@@ -216,7 +216,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                   quantity: 1,
                   image: pairing.image
                 })}
-                className="bg-[#041534] hover:bg-slate-800 text-white text-[10px] uppercase tracking-wider px-3 py-2 font-semibold transition"
+                className="bg-[#041534] hover:bg-slate-800 text-white text-[10px] uppercase tracking-wider px-3 py-2 font-semibold transition touch-manipulation"
               >
                 + Pair (₹{pairing.price})
               </button>

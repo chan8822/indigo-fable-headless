@@ -55,7 +55,7 @@ export default function CartPage() {
                       <button 
                         onClick={() => removeItem(item.id)}
                         aria-label="Remove item" 
-                        className="text-stone-400 hover:text-red-600 transition-colors"
+                        className="text-stone-400 hover:text-red-600 transition-colors touch-manipulation"
                       >
                         <span className="text-xl">✕</span>
                       </button>
@@ -69,7 +69,7 @@ export default function CartPage() {
                     <div className="flex items-center border border-stone-300 rounded-md h-10 w-24 overflow-hidden">
                       <button 
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-1/3 h-full flex justify-center items-center text-stone-500 hover:text-black hover:bg-stone-50 transition"
+                        className="w-1/3 h-full flex justify-center items-center text-stone-500 hover:text-black hover:bg-stone-50 transition touch-manipulation"
                       >
                         -
                       </button>
@@ -78,7 +78,7 @@ export default function CartPage() {
                       </span>
                       <button 
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-1/3 h-full flex justify-center items-center text-stone-500 hover:text-black hover:bg-stone-50 transition"
+                        className="w-1/3 h-full flex justify-center items-center text-stone-500 hover:text-black hover:bg-stone-50 transition touch-manipulation"
                       >
                         +
                       </button>
@@ -130,7 +130,7 @@ export default function CartPage() {
               </div>
               <button 
                 onClick={handleCheckout}
-                className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.2em] py-4 rounded font-semibold flex items-center justify-center gap-2 transition shadow"
+                className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.2em] py-4 rounded font-semibold flex items-center justify-center gap-2 transition shadow touch-manipulation"
               >
                 🔒 SECURE CHECKOUT
               </button>

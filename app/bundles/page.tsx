@@ -139,7 +139,7 @@ export default function BundleBuilderPage() {
                   <div 
                     key={quilt.id} 
                     onClick={() => handleSelectQuilt(quilt)}
-                    className="border border-stone-200 hover:border-black rounded-xl p-4 cursor-pointer bg-white transition hover:shadow-sm"
+                    className="border border-stone-200 hover:border-black rounded-xl p-4 cursor-pointer bg-white transition hover:shadow-sm touch-manipulation"
                   >
                     <div className="aspect-square bg-stone-100 rounded-lg overflow-hidden mb-3">
                       <img className="w-full h-full object-cover" src={quilt.images[0]?.src} alt={quilt.title} />
@@ -153,7 +153,7 @@ export default function BundleBuilderPage() {
             {step > 1 && selectedQuilt && (
               <div className="flex items-center justify-between border-t border-stone-200/50 pt-4 mt-2">
                 <span className="text-sm text-stone-600 font-light">{selectedQuilt.title}</span>
-                <button onClick={() => setStep(1)} className="text-xs text-[#D4AF37] font-semibold underline hover:text-[#041534]">Change</button>
+                <button onClick={() => setStep(1)} className="text-xs text-[#D4AF37] font-semibold underline hover:text-[#041534] touch-manipulation">Change</button>
               </div>
             )}
           </div>
@@ -173,7 +173,7 @@ export default function BundleBuilderPage() {
                       <div 
                         key={scent.id} 
                         onClick={() => setSelectedScent(scent)}
-                        className={`border rounded-xl p-4 cursor-pointer bg-white transition hover:shadow-sm ${
+                        className={`border rounded-xl p-4 cursor-pointer bg-white transition hover:shadow-sm touch-manipulation ${
                           selectedScent?.id === scent.id ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]' : 'border-stone-200 hover:border-black'
                         }`}
                       >
@@ -190,15 +190,15 @@ export default function BundleBuilderPage() {
                   })}
                 </div>
                 <div className="flex justify-between items-center border-t border-stone-200/50 pt-6 mt-4">
-                  <button onClick={() => setStep(1)} className="text-xs text-stone-500 font-semibold hover:text-black">Back to Bedding</button>
-                  <button onClick={() => setStep(3)} className="bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-widest px-6 py-3 font-semibold transition rounded shadow">Next Step</button>
+                  <button onClick={() => setStep(1)} className="text-xs text-stone-500 font-semibold hover:text-black touch-manipulation">Back to Bedding</button>
+                  <button onClick={() => setStep(3)} className="bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-widest px-6 py-3 font-semibold transition rounded shadow touch-manipulation">Next Step</button>
                 </div>
               </div>
             )}
             {step > 2 && selectedScent && (
               <div className="flex items-center justify-between border-t border-stone-200/50 pt-4 mt-2">
                 <span className="text-sm text-stone-600 font-light">{selectedScent.title}</span>
-                <button onClick={() => setStep(2)} className="text-xs text-[#D4AF37] font-semibold underline hover:text-[#041534]">Change</button>
+                <button onClick={() => setStep(2)} className="text-xs text-[#D4AF37] font-semibold underline hover:text-[#041534] touch-manipulation">Change</button>
               </div>
             )}
           </div>
@@ -223,12 +223,12 @@ export default function BundleBuilderPage() {
                     type="checkbox" 
                     checked={addHolder}
                     onChange={(e) => setAddHolder(e.target.checked)}
-                    className="w-5 h-5 text-[#D4AF37] border-stone-300 rounded focus:ring-[#D4AF37]"
+                    className="w-5 h-5 text-[#D4AF37] border-stone-300 rounded focus:ring-[#D4AF37] touch-manipulation"
                   />
                 </div>
                 <div className="flex justify-between items-center border-t border-stone-200/50 pt-6 mt-4">
-                  <button onClick={() => setStep(2)} className="text-xs text-stone-500 font-semibold hover:text-black">Back to Incense</button>
-                  <button onClick={handleAddToBag} className="bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-widest px-8 py-3.5 font-bold transition rounded shadow">Add Bundle to Bag</button>
+                  <button onClick={() => setStep(2)} className="text-xs text-stone-500 font-semibold hover:text-black touch-manipulation">Back to Incense</button>
+                  <button onClick={handleAddToBag} className="bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-widest px-8 py-3.5 font-bold transition rounded shadow touch-manipulation">Add Bundle to Bag</button>
                 </div>
               </div>
             )}
@@ -277,7 +277,7 @@ export default function BundleBuilderPage() {
             <button 
               disabled={!selectedQuilt || !selectedScent}
               onClick={handleAddToBag}
-              className="w-full bg-[#041534] hover:bg-[#0c244c] disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-xs uppercase tracking-widest font-semibold py-4.5 rounded transition shadow flex justify-center items-center gap-2"
+              className="w-full bg-[#041534] hover:bg-[#0c244c] disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-xs uppercase tracking-widest font-semibold py-4.5 rounded transition shadow flex justify-center items-center gap-2 touch-manipulation"
             >
               💼 Add Complete Set to Bag
             </button>

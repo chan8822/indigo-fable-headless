@@ -64,7 +64,7 @@ export function CartDrawer() {
               </div>
               <button 
                 onClick={closeCart}
-                className="p-2 text-stone-400 hover:text-gold-400 transition"
+                className="p-2 text-stone-400 hover:text-gold-400 transition touch-manipulation"
               >
                 ✕
               </button>
@@ -117,12 +117,12 @@ export function CartDrawer() {
                       <div className="flex items-center border border-stone-700 rounded-md">
                         <button 
                           onClick={() => updateQuantity(item.id, -1)}
-                          className="px-2 py-0.5 text-xs hover:bg-stone-800 text-stone-300"
+                          className="px-2 py-0.5 text-xs hover:bg-stone-800 text-stone-300 touch-manipulation"
                         >-</button>
                         <span className="px-2 text-xs text-stone-100 font-medium">{item.quantity}</span>
                         <button 
                           onClick={() => updateQuantity(item.id, 1)}
-                          className="px-2 py-0.5 text-xs hover:bg-stone-800 text-stone-300"
+                          className="px-2 py-0.5 text-xs hover:bg-stone-800 text-stone-300 touch-manipulation"
                         >+</button>
                       </div>
                       <span className="text-xs font-semibold text-stone-200">
@@ -132,7 +132,7 @@ export function CartDrawer() {
                   </div>
                   <button 
                     onClick={() => removeItem(item.id)}
-                    className="text-stone-500 hover:text-rose-400 text-xs self-start"
+                    className="text-stone-500 hover:text-rose-400 text-xs self-start touch-manipulation"
                   >✕</button>
                 </div>
               ))
@@ -161,7 +161,7 @@ export function CartDrawer() {
                     quantity: 1,
                     image: promoProduct.image
                   })}
-                  className="bg-gold-500 hover:bg-gold-400 text-indigo-950 text-[10px] uppercase tracking-wider px-3 py-2 font-bold transition rounded"
+                  className="bg-gold-500 hover:bg-gold-400 text-indigo-950 text-[10px] uppercase tracking-wider px-3 py-2 font-bold transition rounded touch-manipulation"
                 >
                   + Add
                 </button>
@@ -178,7 +178,7 @@ export function CartDrawer() {
             <button 
               onClick={handleCheckout}
               disabled={items.length === 0}
-              className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-stone-800 disabled:text-stone-600 text-indigo-950 py-4 rounded-xl font-medium tracking-wider uppercase text-xs transition duration-300 shadow-lg"
+              className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-stone-800 disabled:text-stone-600 text-indigo-950 py-4 rounded-xl font-medium tracking-wider uppercase text-xs transition duration-300 shadow-lg touch-manipulation"
             >
               Proceed to Secure Checkout
             </button>
