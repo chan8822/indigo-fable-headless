@@ -23,44 +23,127 @@ export interface ShopifyProduct {
   tags?: string[];
 }
 
-export async function getLiveProducts(): Promise<ShopifyProduct[]> {
+export async function shopifyGraphQLFetch<T>(query: string, variables = {}): Promise<T | null> {
   try {
-    const res = await fetch(`https://${DOMAIN}/admin/api/2025-10/products.json?limit=12`, {
+    const res = await fetch(`https://${DOMAIN}/admin/api/2025-10/graphql.json`, {
+      method: 'POST',
       headers: {
-        "X-Shopify-Access-Token": ADMIN_TOKEN,
-        "Content-Type": "application/json",
+        'X-Shopify-Access-Token': ADMIN_TOKEN,
+        'Content-Type': 'application/json',
       },
-      next: { revalidate: 60 }
+      body: JSON.stringify({ query, variables }),
+      next: { revalidate: 60 },
     });
-    
+
     if (!res.ok) {
-      console.error("Failed to fetch products:", res.statusText);
-      return getMockProducts();
+      console.error('GraphQL fetch status error:', res.statusText);
+      return null;
     }
 
-    const data = await res.json();
-    const live = (data.products || []).map((p: any) => ({
-      id: strToGid(p.id),
-      title: p.title,
-      handle: p.handle,
-      descriptionHtml: p.body_html || p.description || "",
-      vendor: p.vendor || "The Indigo Fable",
-      variants: (p.variants || []).map((v: any) => ({
-        id: strToGid(v.id),
-        title: v.title,
-        price: v.price,
-      })),
-      images: (p.images || []).map((img: any) => ({
-        src: img.src,
-        alt: img.alt || p.title,
-      })),
-    }));
-
-    return [...live, ...getMockProducts()];
+    const json = await res.json();
+    if (json.errors) {
+      console.error('GraphQL syntax/query errors:', json.errors);
+      return null;
+    }
+    return json.data as T;
   } catch (err) {
-    console.error("Shopify fetch error:", err);
+    console.error('GraphQL network/JSON parse error:', err);
+    return null;
+  }
+}
+
+export async function getLiveProducts(): Promise<ShopifyProduct[]> {
+  const query = `
+    query GetProducts {
+      products(first: 12) {
+        edges {
+          node {
+            id
+            title
+            handle
+            descriptionHtml
+            vendor
+            variants(first: 5) {
+              edges {
+                node {
+                  id
+                  title
+                  price
+                }
+              }
+            }
+            images(first: 5) {
+              edges {
+                node {
+                  url
+                  altText
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  interface GraphQLProductNode {
+    id: string;
+    title: string;
+    handle: string;
+    descriptionHtml: string;
+    vendor: string;
+    variants: {
+      edges: {
+        node: {
+          id: string;
+          title: string;
+          price: string;
+        };
+      }[];
+    };
+    images: {
+      edges: {
+        node: {
+          url: string;
+          altText: string | null;
+        };
+      }[];
+    };
+  }
+
+  interface ProductsQueryResult {
+    products: {
+      edges: {
+        node: GraphQLProductNode;
+      }[];
+    };
+  }
+
+  const data = await shopifyGraphQLFetch<ProductsQueryResult>(query);
+
+  if (!data || !data.products) {
+    console.warn("Falling back to mocks only due to failed GraphQL query");
     return getMockProducts();
   }
+
+  const live: ShopifyProduct[] = data.products.edges.map(({ node }) => ({
+    id: node.id,
+    title: node.title,
+    handle: node.handle,
+    descriptionHtml: node.descriptionHtml || "",
+    vendor: node.vendor || "The Indigo Fable",
+    variants: node.variants.edges.map(({ node: v }) => ({
+      id: v.id,
+      title: v.title,
+      price: v.price,
+    })),
+    images: node.images.edges.map(({ node: img }) => ({
+      src: img.url,
+      alt: img.altText || node.title,
+    })),
+  }));
+
+  return [...live, ...getMockProducts()];
 }
 
 function getMockProducts(): ShopifyProduct[] {
@@ -111,10 +194,89 @@ function getMockProducts(): ShopifyProduct[] {
 }
 
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
+  const mocks = getMockProducts();
+  const mockMatch = mocks.find(p => p.handle === handle);
+  if (mockMatch) return mockMatch;
+
+  const query = `
+    query GetProduct($handle: String!) {
+      productByHandle(handle: $handle) {
+        id
+        title
+        handle
+        descriptionHtml
+        vendor
+        variants(first: 5) {
+          edges {
+            node {
+              id
+              title
+              price
+            }
+          }
+        }
+        images(first: 5) {
+          edges {
+            node {
+              url
+              altText
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  interface GraphQLProductNode {
+    id: string;
+    title: string;
+    handle: string;
+    descriptionHtml: string;
+    vendor: string;
+    variants: {
+      edges: {
+        node: {
+          id: string;
+          title: string;
+          price: string;
+        };
+      }[];
+    };
+    images: {
+      edges: {
+        node: {
+          url: string;
+          altText: string | null;
+        };
+      }[];
+    };
+  }
+
+  interface SingleProductResult {
+    productByHandle: GraphQLProductNode | null;
+  }
+
   try {
-    const products = await getLiveProducts();
-    const match = products.find((p) => p.handle === handle);
-    return match || null;
+    const data = await shopifyGraphQLFetch<SingleProductResult>(query, { handle });
+    if (!data || !data.productByHandle) return null;
+
+    const node = data.productByHandle;
+    return {
+      id: node.id,
+      title: node.title,
+      handle: node.handle,
+      descriptionHtml: node.descriptionHtml || "",
+      vendor: node.vendor || "The Indigo Fable",
+      variants: node.variants.edges.map(({ node: v }) => ({
+        id: v.id,
+        title: v.title,
+        price: v.price,
+      })),
+      images: node.images.edges.map(({ node: img }) => ({
+        src: img.url,
+        alt: img.altText || node.title,
+      })),
+    };
   } catch (err) {
     return null;
   }
@@ -122,13 +284,8 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
 
 export async function getProductsByCollection(collectionHandle: string): Promise<ShopifyProduct[]> {
   try {
-    // For our developer store demo, since there are no custom collections, we return all products
     return await getLiveProducts();
   } catch (err) {
     return [];
   }
-}
-
-function strToGid(id: number | string): string {
-  return id.toString();
 }
