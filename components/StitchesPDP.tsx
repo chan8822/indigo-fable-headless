@@ -11,18 +11,43 @@ interface StitchesPDPProps {
 export function StitchesPDP({ product }: StitchesPDPProps) {
   const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0] || { id: '', title: '', price: '0.00' });
-  const [activeSize, setActiveSize] = useState('Double'); // Default active size mock
+  const [activeSize, setActiveSize] = useState('Double'); 
+  const [isTrilogy, setIsTrilogy] = useState(false); // Multi-buy widget state
+
+  const isFragrance = product.handle.includes('incense') || product.handle.includes('dhoop');
+
+  const getScentPairing = () => {
+    if (product.handle.includes('rose')) {
+      return {
+        title: "Jaipuri Rose & Monsoon Rain Incense",
+        price: "299.00",
+        id: "mock-variant-f1",
+        image: "https://lh3.googleusercontent.com/aida/AP1WRLtCBgcx-G9rKHLLwnWSzdiB82XG8D_qe7E6qPRIFY1L_pMZOpZFCk0Ifjg2AUSBWPfHtPvOpUKmRVxxuAxIwpJH-vfb_Y4l_5uX_c_o6GaSDc_xHLhURjkm4xMq_JHoMIg9A8yzTqUl8_i_jiXiT99opDd77DOHEXOoaWKrY5pc3ynmj8EeJfFK_R8HwwtnUioB7XdaMRtKHDOlw19R0xJbzpGQWn9jWejQQD6Un-_WQM95iNjEzIjqpqiC"
+      };
+    }
+    return {
+      title: "Indigo Nights Signature Incense",
+      price: "299.00",
+      id: "mock-variant-f2",
+      image: "https://lh3.googleusercontent.com/aida/AP1WRLvePLKmfu-RkqzJeFBThsiqL4cj6nWZVrPN0SeZ_uLItOvxH6h3-O09zJxH7fMzTGm9wc0DWkLbSPdpgPBZtRBqjZft1rnFRGIJq7gwVVERVaVr3dlyPjq4ublhH333_CnNd2qiTfUf2iVLjLxWS_3D2ZuGgeZOdpQ617fl21jOsv8Gt9alB3xaAhIyBQtS_uEzBMUX4xe4AO1JCTgyUkN18rPIrqj3BqYnvKn3KWe0Ydj7ffjBiOrkXWTg"
+    };
+  };
 
   const handleAddToCart = () => {
+    const finalPrice = isFragrance && isTrilogy ? "266.33" : selectedVariant.price; // 799 / 3 = 266.33
+    const finalQty = isFragrance && isTrilogy ? 3 : 1;
+
     addItem({
       id: selectedVariant.id,
       title: product.title,
-      variantTitle: selectedVariant.title || activeSize,
-      price: selectedVariant.price,
-      quantity: 1,
+      variantTitle: isFragrance && isTrilogy ? "Trilogy Pack (3 boxes)" : (selectedVariant.title || activeSize),
+      price: finalPrice,
+      quantity: finalQty,
       image: product.images[0]?.src || '',
     });
   };
+
+  const pairing = getScentPairing();
 
   return (
     <main className="max-w-[1280px] mx-auto md:px-16 px-6 md:pt-20 pt-8 space-y-24">
@@ -38,22 +63,24 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
               src={product.images[0]?.src || 'https://lh3.googleusercontent.com/aida/AP1WRLt3tQz2JaHgEfXpdhARB9TWhsgti5xD5GkU7TrhfTQXmNylPAo0widHBDKx3DCdh3ATgUTi6vJwYd1xflL3GDt2dvD0wBEIgN3kuOveTIXxl0yHm4YFt2IEjE7Si3OAHuOg52jFKYEkYLPBRTZc5HMq0zkN-dWRS2xMSi8VZFb3Ofv4fQvhsY930TL8q6_FcveEMQLbqKqWGBY6mBcI6HRsZdAi-m9FS5YbReWpSdXk4Mtav5u16X079CqV'}
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="w-full aspect-square bg-stone-100 overflow-hidden rounded-2xl border border-stone-200 group">
-              <img 
-                alt="Close-up detail" 
-                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out" 
-                src={product.images[1]?.src || 'https://lh3.googleusercontent.com/aida/AP1WRLvePLKmfu-RkqzJeFBThsiqL4cj6nWZVrPN0SeZ_uLItOvxH6h3-O09zJxH7fMzTGm9wc0DWkLbSPdpgPBZtRBqjZft1rnFRGIJq7gwVVERVaVr3dlyPjq4ublhH333_CnNd2qiTfUf2iVLjLxWS_3D2ZuGgeZOdpQ617fl21jOsv8Gt9alB3xaAhIyBQtS_uEzBMUX4xe4AO1JCTgyUkN18rPIrqj3BqYnvKn3KWe0Ydj7ffjBiOrkXWTg'}
-              />
+          {product.images.length > 2 && (
+            <div className="grid grid-cols-2 gap-2">
+              <div className="w-full aspect-square bg-stone-100 overflow-hidden rounded-2xl border border-stone-200 group">
+                <img 
+                  alt="Close-up detail" 
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out" 
+                  src={product.images[1]?.src}
+                />
+              </div>
+              <div className="w-full aspect-square bg-stone-100 overflow-hidden rounded-2xl border border-stone-200 group">
+                <img 
+                  alt="Folded detail" 
+                  className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out" 
+                  src={product.images[2]?.src}
+                />
+              </div>
             </div>
-            <div className="w-full aspect-square bg-stone-100 overflow-hidden rounded-2xl border border-stone-200 group">
-              <img 
-                alt="Folded detail" 
-                className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-700 ease-out" 
-                src={product.images[2]?.src || 'https://lh3.googleusercontent.com/aida/AP1WRLscXhOrBafqwwe6B40RvBlh-x6iisW75JjDxth34fY-5DG9aJAl0mEPo249Jc8rDFhF91HoSek_PjOX6_vD1Qn18xQYfpnc0aNj1pUc5fWYw4h3bucPOuTSpPkpUFW6vFKAlrPYEUCm9Tw9oX9nCOPYGrCbsMPNF4j56TEyatZ4sDieFLJGhtkKb7eMUdEKBX7IRS_wyqiB13s8A_3kifu28LCRUnsIPuVwnE3LN5Nnz4WPovMxD_W7cqzc'}
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Product Info Column */}
@@ -61,84 +88,180 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
           <nav className="flex text-stone-500 text-[10px] uppercase tracking-widest font-semibold mb-6">
             <a className="hover:text-black transition" href="/">Home</a>
             <span className="mx-2">/</span>
-            <a className="hover:text-black transition" href="/collections/all">Bedding</a>
+            <a className="hover:text-black transition" href="/collections/all">
+              {isFragrance ? 'Fragrance' : 'Bedding'}
+            </a>
             <span className="mx-2">/</span>
-            <span className="text-black">Quilts</span>
+            <span className="text-black">{isFragrance ? 'Incense' : 'Quilts'}</span>
           </nav>
           
-          <h1 className="text-3xl md:text-5xl font-serif text-slate-900 leading-tight mb-4">
+          <h1 className="text-3xl md:text-5xl font-serif text-slate-900 leading-tight mb-2">
             {product.title}
           </h1>
 
+          {/* Formulation Badges (Fragrance only) */}
+          {isFragrance && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="text-[10px] uppercase tracking-wider bg-emerald-50 text-emerald-700 px-3 py-1 border border-emerald-100 font-semibold rounded-full">
+                🌿 100% Charcoal-Free
+              </span>
+              <span className="text-[10px] uppercase tracking-wider bg-indigo-50 text-indigo-700 px-3 py-1 border border-indigo-100 font-semibold rounded-full">
+                🌸 Botanical Infusion
+              </span>
+              <span className="text-[10px] uppercase tracking-wider bg-amber-50 text-amber-700 px-3 py-1 border border-amber-100 font-semibold rounded-full">
+                🪵 Bambooless Craft
+              </span>
+            </div>
+          )}
+
           <p className="text-stone-600 leading-relaxed font-light mb-6 text-sm md:text-base">
-            A masterpiece of restraint and artistry. Hand-carved teak blocks meet 300 years of Rajasthani heritage, dyed in deep natural indigo. Reversible for nuanced storytelling in your most intimate space.
+            {product.descriptionHtml.replace(/<[^>]*>/g, '')}
           </p>
 
           <div className="text-2xl font-serif text-slate-900 mb-8">
-            ₹{Number(selectedVariant.price).toLocaleString('en-IN')}
-            <span className="text-sm font-sans text-stone-400 ml-3 line-through">
-              ₹{(Number(selectedVariant.price) * 1.25).toLocaleString('en-IN')}
-            </span>
+            ₹{isFragrance && isTrilogy ? '799.00' : Number(selectedVariant.price).toLocaleString('en-IN')}
+            {!isFragrance && (
+              <span className="text-sm font-sans text-stone-400 ml-3 line-through">
+                ₹{(Number(selectedVariant.price) * 1.25).toLocaleString('en-IN')}
+              </span>
+            )}
+            {isFragrance && isTrilogy && (
+              <span className="text-xs font-sans text-emerald-600 ml-3 font-semibold">
+                (Save ₹98 on Trilogy Pack!)
+              </span>
+            )}
           </div>
 
-          {/* Size Selector */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-xs uppercase tracking-wider text-slate-900 font-semibold">Select Size</span>
-              <span className="text-xs text-stone-500 underline cursor-pointer hover:text-black">Size Guide</span>
-            </div>
-            <div className="flex gap-3">
-              {['Single', 'Double', 'King'].map((size) => (
+          {/* Scent selector / Trilogy Pack Multi-Buy Widget */}
+          {isFragrance ? (
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-xs uppercase tracking-wider text-slate-900 font-semibold">Choose Pack Size</span>
+              </div>
+              <div className="flex gap-3">
                 <button
-                  key={size}
-                  onClick={() => setActiveSize(size)}
+                  onClick={() => setIsTrilogy(false)}
                   className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
-                    activeSize === size
+                    !isTrilogy
                       ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
                       : 'border-stone-200 text-stone-600 hover:border-black'
                   }`}
                 >
-                  {size}
+                  Single Box (₹299)
                 </button>
-              ))}
+                <button
+                  onClick={() => setIsTrilogy(true)}
+                  className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
+                    isTrilogy
+                      ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
+                      : 'border-stone-200 text-stone-600 hover:border-black'
+                  }`}
+                >
+                  Trilogy Pack - 3 Boxes (₹799)
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Textile Size Selector */
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-xs uppercase tracking-wider text-slate-900 font-semibold">Select Size</span>
+                <span className="text-xs text-stone-500 underline cursor-pointer hover:text-black">Size Guide</span>
+              </div>
+              <div className="flex gap-3">
+                {['Single', 'Double', 'King'].map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setActiveSize(size)}
+                    className={`flex-1 py-3 border text-xs uppercase tracking-wider transition ${
+                      activeSize === size
+                        ? 'border-[#041534] bg-[#F5F0EA] text-[#041534] font-semibold'
+                        : 'border-stone-200 text-stone-600 hover:border-black'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Add to Bag Button */}
           <button 
             onClick={handleAddToCart}
             className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.25em] font-semibold py-4.5 rounded transition flex justify-center items-center gap-2 mb-3 shadow-md"
           >
-            Add to Bag ➔
+            {isFragrance && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
           </button>
-          <p className="text-xs text-stone-500 text-center mb-10">
-            Complimentary shipping and returns on all heritage pieces.
+          <p className="text-xs text-stone-500 text-center mb-6">
+            Complimentary shipping and COD available.
           </p>
+
+          {/* Bedding Olfactory Pairing Injector Widget */}
+          {!isFragrance && (
+            <div className="mb-8 p-4 bg-[#F5F0EA] border border-stone-200 rounded-xl flex items-center justify-between gap-4">
+              <div className="flex gap-3 items-center">
+                <img src={pairing.image} className="w-12 h-16 object-cover rounded-md border border-stone-200" alt="Pairing Scent" />
+                <div>
+                  <h4 className="text-xs font-semibold text-slate-800">Olfactory Pairing Recommendation</h4>
+                  <p className="text-[11px] text-stone-500 font-light mt-0.5">Pair with {pairing.title}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => addItem({
+                  id: pairing.id,
+                  title: pairing.title,
+                  variantTitle: 'Standard Box',
+                  price: pairing.price,
+                  quantity: 1,
+                  image: pairing.image
+                })}
+                className="bg-[#041534] hover:bg-slate-800 text-white text-[10px] uppercase tracking-wider px-3 py-2 font-semibold transition"
+              >
+                + Pair (₹{pairing.price})
+              </button>
+            </div>
+          )}
 
           {/* Accordions */}
           <div className="border-t border-stone-200 divide-y divide-stone-200">
             <details className="group py-4.5 cursor-pointer" open>
               <summary className="flex justify-between items-center text-base font-serif text-slate-900 list-none">
-                Craft & Care
+                {isFragrance ? 'Olfactory Recipe' : 'Craft & Care'}
                 <span className="transition duration-300 group-open:rotate-180">▾</span>
               </summary>
               <div className="pt-3 text-stone-600 text-sm font-light space-y-2 leading-relaxed">
-                <ul className="list-disc pl-5 space-y-1.5">
-                  <li>100% Organic Mulmul Cotton Shell & Filling</li>
-                  <li>Hand-block printed using Azo-Free, natural plant dyes</li>
-                  <li>Reversible design (Indigo Floral / Geometric Sand)</li>
-                  <li>Care: Dry clean recommended to preserve natural dye vibrancy.</li>
-                </ul>
+                {isFragrance ? (
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    <li><strong>Scent Profile:</strong> {product.scent_profile}</li>
+                    <li><strong>Ingredients:</strong> {product.ingredients}</li>
+                  </ul>
+                ) : (
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    <li>100% Organic Mulmul Cotton Shell & Filling</li>
+                    <li>Hand-block printed using Azo-Free, natural plant dyes</li>
+                    <li>Reversible design (Indigo Floral / Geometric Sand)</li>
+                    <li>Care: Dry clean recommended to preserve natural dye vibrancy.</li>
+                  </ul>
+                )}
               </div>
             </details>
 
             <details className="group py-4.5 cursor-pointer">
               <summary className="flex justify-between items-center text-base font-serif text-slate-900 list-none">
-                Shipping & Returns
+                {isFragrance ? 'Burn & Preservation Tips' : 'Shipping & Returns'}
                 <span className="transition duration-300 group-open:rotate-180">▾</span>
               </summary>
               <div className="pt-3 text-stone-600 text-sm font-light leading-relaxed">
-                <p>Each piece is crafted slowly. Please allow 3-5 business days for dispatch. We offer a 30-day return policy for unused items in original packaging.</p>
+                {isFragrance ? (
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    <li><strong>Burn Time:</strong> {product.burn_time}</li>
+                    <li>Store in a cool, dry place to prevent essential oil volatility.</li>
+                    <li>Burn in a well-ventilated space away from drafts.</li>
+                  </ul>
+                ) : (
+                  <p>Each piece is crafted slowly. Please allow 3-5 business days for dispatch. We offer a 30-day return policy for unused items in original packaging.</p>
+                )}
               </div>
             </details>
           </div>

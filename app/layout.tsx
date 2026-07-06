@@ -25,9 +25,10 @@ export default function RootLayout({
                   The Indigo Fable
                 </a>
                 <nav className="hidden md:flex space-x-6 text-sm uppercase tracking-widest text-stone-300 font-medium">
-                  <a href="#collection" className="hover:text-gold-400 transition">Signature Quilts</a>
-                  <a href="#heritage" className="hover:text-gold-400 transition">Our Craft</a>
-                  <a href="#concierge" className="hover:text-gold-400 transition">Concierge Tracking</a>
+                  <a href="/" className="hover:text-gold-400 transition">Home</a>
+                  <a href="/collections/quilts" className="hover:text-gold-400 transition">Quilts</a>
+                  <a href="/collections/fragrances" className="hover:text-gold-400 transition">Home Fragrances</a>
+                  <a href="/bundles" className="hover:text-gold-400 transition">Sensory Bundles</a>
                 </nav>
               </div>
               <div className="flex items-center space-x-6">
@@ -51,11 +52,12 @@ export default function RootLayout({
                 </p>
               </div>
               <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-200 font-semibold mb-4">Collections</h4>
+                <h4 className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold mb-4">Collections</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="#collection" className="hover:text-gold-400 transition">Organic Cotton Quilts</a></li>
-                  <li><a href="#collection" className="hover:text-gold-400 transition">Reversible Razais</a></li>
-                  <li><a href="#collection" className="hover:text-gold-400 transition">Heirloom Sets</a></li>
+                  <li><a href="/collections/quilts" className="hover:text-gold-400 transition">Organic Cotton Quilts</a></li>
+                  <li><a href="/collections/sheets" className="hover:text-gold-400 transition">Fine Bed Sheets</a></li>
+                  <li><a href="/collections/fragrances" className="hover:text-gold-400 transition">Home Fragrances</a></li>
+                  <li><a href="/bundles" className="hover:text-gold-400 transition">Sensory Sanctuary Bundles</a></li>
                 </ul>
               </div>
               <div>

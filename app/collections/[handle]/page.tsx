@@ -131,6 +131,24 @@ export default function CollectionPage({ params }: { params: { handle: string } 
       .catch(() => setLoading(false));
   }, []);
 
+  const filteredProducts = products.filter(p => {
+    const handle = params.handle.toLowerCase();
+    if (handle === 'all') return true;
+    if (handle === 'fragrances') {
+      return p.handle.includes('incense') || p.handle.includes('dhoop') || (p.tags && p.tags.some((t: string) => t.includes('fragrance-type')));
+    }
+    if (handle === 'quilts') {
+      return p.handle.includes('quilt') || p.handle.includes('razai') || p.title.toLowerCase().includes('quilt');
+    }
+    if (handle === 'sheets') {
+      return p.handle.includes('sheet') || p.title.toLowerCase().includes('sheet');
+    }
+    if (handle === 'robes') {
+      return p.handle.includes('robe') || p.title.toLowerCase().includes('robe');
+    }
+    return true;
+  });
+
   const formattedTitle = params.handle.replace(/-/g, ' ');
 
   if (loading) {
@@ -145,11 +163,11 @@ export default function CollectionPage({ params }: { params: { handle: string } 
     <div className="max-w-7xl mx-auto px-6 py-12">
       <Header>
         <Title>{formattedTitle} Collection</Title>
-        <Subtitle>Discover heirloom quality, hand-block printed cotton masterpieces.</Subtitle>
+        <Subtitle>Discover heirloom quality masterpieces.</Subtitle>
       </Header>
 
       <Grid>
-        {products.map((product) => {
+        {filteredProducts.map((product) => {
           const mainImage = product.images[0]?.src || '';
           const firstVariant = product.variants[0] || { id: '', price: '0.00', title: '' };
 
