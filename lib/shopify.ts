@@ -56,6 +56,25 @@ export async function getLiveProducts(): Promise<ShopifyProduct[]> {
   }
 }
 
+export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
+  try {
+    const products = await getLiveProducts();
+    const match = products.find((p) => p.handle === handle);
+    return match || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function getProductsByCollection(collectionHandle: string): Promise<ShopifyProduct[]> {
+  try {
+    // For our developer store demo, since there are no custom collections, we return all products
+    return await getLiveProducts();
+  } catch (err) {
+    return [];
+  }
+}
+
 function strToGid(id: number | string): string {
   return id.toString();
 }
