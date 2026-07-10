@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-stone-50 text-stone-900 antialiased selection:bg-gold-400 selection:text-indigo-950;
+    @apply bg-stone-50 font-sans text-stone-900 antialiased selection:bg-gold-400 selection:text-indigo-950;
+  }
+  h1, h2, h3 {
+    font-family: theme('fontFamily.serif');
+    font-optical-sizing: auto;
   }
 }
 

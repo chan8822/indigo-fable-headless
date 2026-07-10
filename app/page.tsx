@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Truck, Stamp, Banknote, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRegion } from '@/context/RegionContext';
 import { OrderLookup } from '@/components/OrderLookup';
@@ -42,22 +43,29 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#041534]/70 via-transparent to-transparent" />
         </div>
-        <div className="relative z-10 space-y-6 max-w-2xl text-white">
-          <span className="text-xs uppercase tracking-[0.25em] text-stone-200 font-semibold block">
-            The Indigo Fable
+        <div className="relative z-10 space-y-6 max-w-3xl text-white">
+          <span className="text-[11px] uppercase tracking-[0.42em] text-gold-300 font-medium block">
+            Hand-Block Printed in Jaipur
           </span>
-          <h2 className="text-4xl md:text-6xl font-serif leading-tight font-medium">
-            The Heritage of Jaipur, Woven for Your Home
+          <h2 className="text-5xl md:text-7xl font-serif leading-[1.05] font-semibold">
+            The Heritage of Jaipur,<br className="hidden md:block" /> Woven for Your Home
           </h2>
-          <p className="text-base md:text-lg opacity-90 max-w-lg font-light leading-relaxed">
-            Hand-block printed heirloom quilts, crafted slowly in Rajasthan.
+          <p className="text-base md:text-lg opacity-85 max-w-lg font-light leading-relaxed">
+            Heirloom quilts, fine percale linens, and botanical home fragrance — crafted slowly in Rajasthan.
           </p>
-          <div className="flex pt-2">
-            <a 
-              href="#collection" 
-              className="bg-[#041534] hover:bg-[#0c244c] text-white px-8 py-4 text-xs uppercase tracking-widest font-semibold transition-all hover:translate-y-[-2px] active:scale-95 shadow-lg"
+          <div className="flex items-center gap-6 pt-3">
+            <a
+              href="#collection"
+              className="bg-white text-indigo-950 hover:bg-gold-300 px-9 py-4 text-[11px] uppercase tracking-[0.22em] font-semibold transition-colors"
             >
               Explore the Collection
+            </a>
+            <a
+              href="/bundles"
+              className="group flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] font-medium text-stone-100 border-b border-gold-400/70 pb-1 hover:text-gold-300 transition-colors"
+            >
+              Build a Sanctuary Set
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
             </a>
           </div>
         </div>
@@ -67,21 +75,21 @@ export default function HomePage() {
       <section className="py-12 bg-[#F5F0EA] border-y border-stone-200/50">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 items-center text-center">
           <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">🚚</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Complimentary Shipping Across India
+            <Truck className="h-6 w-6 text-gold-500" strokeWidth={1.25} />
+            <p className="text-[11px] uppercase tracking-[0.18em] text-indigo-950 font-semibold">
+              Complimentary Shipping Over Threshold
             </p>
           </div>
           <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">📐</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Handcrafted in Jaipur
+            <Stamp className="h-6 w-6 text-gold-500" strokeWidth={1.25} />
+            <p className="text-[11px] uppercase tracking-[0.18em] text-indigo-950 font-semibold">
+              Hand-Block Printed in Jaipur
             </p>
           </div>
           <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">💵</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Cash on Delivery Available
+            <Banknote className="h-6 w-6 text-gold-500" strokeWidth={1.25} />
+            <p className="text-[11px] uppercase tracking-[0.18em] text-indigo-950 font-semibold">
+              UPI, Cards & Cash on Delivery
             </p>
           </div>
         </div>
@@ -107,8 +115,8 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
             </div>
             <h3 className="text-xl font-serif text-[#041534] mb-2">Jaipuri Quilts</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
+            <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500 flex items-center gap-2 group-hover:text-gold-600 transition-colors">
+              Explore <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
             </p>
           </a>
 
@@ -123,8 +131,8 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
             </div>
             <h3 className="text-xl font-serif text-[#041534] mb-2">Block-Printed Sheets</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
+            <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500 flex items-center gap-2 group-hover:text-gold-600 transition-colors">
+              Explore <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
             </p>
           </a>
 
@@ -139,8 +147,8 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
             </div>
             <h3 className="text-xl font-serif text-[#041534] mb-2">Waffle Robes</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
+            <p className="text-[11px] uppercase tracking-[0.18em] text-stone-500 flex items-center gap-2 group-hover:text-gold-600 transition-colors">
+              Explore <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
             </p>
           </a>
         </div>
@@ -199,35 +207,38 @@ export default function HomePage() {
               const firstVariant = product.variants[0] || { id: '', price: '0.00' };
 
               return (
-                <div key={product.id} className="group flex flex-col gap-4 border border-stone-200 rounded-2xl p-4 bg-white hover:shadow-md transition">
-                  <div className="aspect-[4/5] bg-[#F5F0EA] rounded-xl overflow-hidden relative">
-                    <img 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" 
-                      src={mainImage} 
-                      alt={product.title} 
+                <div key={product.id} className="group relative">
+                  <a href={`/products/${product.handle}`} className="block aspect-[4/5] bg-ivory rounded-lg overflow-hidden relative border border-stone-200/70 hover:border-gold-500/50 transition-colors">
+                    <img
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      src={mainImage}
+                      alt={product.title}
                     />
-                    <button 
-                      onClick={() => addItem({
-                        id: firstVariant.id,
-                        title: product.title,
-                        variantTitle: 'Standard',
-                        price: firstVariant.price,
-                        quantity: 1,
-                        image: mainImage,
-                      })}
-                      className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm text-[#041534] px-6 py-3 text-xs uppercase tracking-widest font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-sm"
-                    >
-                      Add to Bag
-                    </button>
-                  </div>
-                  <div className="mt-2 space-y-1">
-                    <a href={`/products/${product.handle}`} className="text-lg font-serif text-[#041534] block hover:text-[#D4AF37] transition">
-                      {product.title}
-                    </a>
-                    <p className="text-sm text-[#D4AF37] font-semibold">
-                      {formatPrice(firstVariant.price)}
-                    </p>
-                  </div>
+                    {/* Floating title + price pill */}
+                    <div className="absolute bottom-0 left-0 flex w-full px-4 pb-4">
+                      <div className="flex w-full items-center rounded-full border border-stone-200/60 bg-white/80 p-1 pl-4 text-xs backdrop-blur-md shadow-sm">
+                        <h3 className="mr-3 line-clamp-1 grow font-medium tracking-tight text-indigo-950">
+                          {product.title}
+                        </h3>
+                        <span className="flex-none rounded-full bg-indigo-950 px-3.5 py-2 text-[11px] font-semibold text-gold-300">
+                          {formatPrice(firstVariant.price)}
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                  <button
+                    onClick={() => addItem({
+                      id: firstVariant.id,
+                      title: product.title,
+                      variantTitle: 'Standard',
+                      price: firstVariant.price,
+                      quantity: 1,
+                      image: mainImage,
+                    })}
+                    className="mt-3 w-full border border-indigo-950/15 text-indigo-950 hover:bg-indigo-950 hover:text-stone-50 py-3 text-[11px] uppercase tracking-[0.2em] font-semibold transition-colors touch-manipulation"
+                  >
+                    Add to Bag
+                  </button>
                 </div>
               );
             })}

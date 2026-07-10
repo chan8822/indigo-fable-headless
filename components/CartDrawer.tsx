@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { X, PartyPopper, Sparkle, Lock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRegion } from '@/context/RegionContext';
 import { RegionPaymentBadges } from '@/components/RegionSwitcher';
@@ -67,11 +68,12 @@ export function CartDrawer() {
                 <h2 className="text-lg font-serif text-gold-400 uppercase tracking-wider">Your Shopping Bag</h2>
                 <p className="text-xs text-stone-400">Heirloom Handcrafted Home Living</p>
               </div>
-              <button 
+              <button
                 onClick={closeCart}
+                aria-label="Close bag"
                 className="p-2 text-stone-400 hover:text-gold-400 transition touch-manipulation"
               >
-                ✕
+                <X className="h-5 w-5" strokeWidth={1.5} />
               </button>
             </div>
 
@@ -80,7 +82,7 @@ export function CartDrawer() {
               <div className="space-y-2 mt-4 bg-indigo-900/40 p-3 rounded-lg border border-gold-500/10">
                 <div className="text-xs flex justify-between font-light">
                   {isFreeShipping ? (
-                    <span className="text-emerald-400 font-semibold">🎉 You've unlocked Free Shipping!</span>
+                    <span className="text-emerald-400 font-semibold flex items-center gap-1.5"><PartyPopper className="h-3.5 w-3.5" strokeWidth={1.5} /> You've unlocked Free Shipping!</span>
                   ) : (
                     <span>Add <strong className="text-gold-400">{formatAmount(difference)}</strong> more for Free Shipping</span>
                   )}
@@ -100,8 +102,8 @@ export function CartDrawer() {
           <div className="flex-grow overflow-y-auto p-6 space-y-6">
             {items.length === 0 ? (
               <div className="text-center py-20 space-y-4">
-                <div className="w-16 h-16 rounded-full bg-indigo-950 border border-gold-500/20 flex items-center justify-center mx-auto text-gold-400 text-2xl">
-                  ✦
+                <div className="w-16 h-16 rounded-full bg-indigo-950 border border-gold-500/20 flex items-center justify-center mx-auto text-gold-400">
+                  <Sparkle className="h-6 w-6" strokeWidth={1.25} />
                 </div>
                 <p className="text-stone-400 text-sm">Your artisanal bag is currently empty.</p>
               </div>
@@ -135,10 +137,11 @@ export function CartDrawer() {
                       </span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => removeItem(item.id)}
-                    className="text-stone-500 hover:text-rose-400 text-xs self-start touch-manipulation"
-                  >✕</button>
+                    aria-label="Remove item"
+                    className="text-stone-500 hover:text-rose-400 self-start touch-manipulation"
+                  ><X className="h-4 w-4" strokeWidth={1.5} /></button>
                 </div>
               ))
             )}
@@ -184,9 +187,9 @@ export function CartDrawer() {
             <button 
               onClick={handleCheckout}
               disabled={items.length === 0}
-              className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-stone-800 disabled:text-stone-600 text-indigo-950 py-4 rounded-xl font-medium tracking-wider uppercase text-xs transition duration-300 shadow-lg touch-manipulation"
+              className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-stone-800 disabled:text-stone-600 text-indigo-950 py-4 rounded-xl font-semibold tracking-[0.2em] uppercase text-[11px] transition duration-300 shadow-lg touch-manipulation flex items-center justify-center gap-2"
             >
-              Proceed to Secure Checkout
+              <Lock className="h-3.5 w-3.5" strokeWidth={2} /> Proceed to Secure Checkout
             </button>
           </div>
 

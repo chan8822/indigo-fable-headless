@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ZoomIn } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRegion } from '@/context/RegionContext';
 
@@ -66,7 +67,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
           onClick={() => onOpenZoom(product.images, activeImgIndex)}
           className="absolute bottom-4 right-4 bg-indigo-950/80 hover:bg-indigo-950 text-gold-400 text-xs px-3 py-1.5 rounded-lg border border-gold-500/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          🔍 Zoom View
+          <span className="flex items-center gap-1.5"><ZoomIn className="h-3.5 w-3.5" strokeWidth={1.5} /> Zoom View</span>
         </button>
       </div>
 

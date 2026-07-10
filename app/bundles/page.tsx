@@ -286,7 +286,7 @@ export default function BundleBuilderPage() {
               onClick={handleAddToBag}
               className="w-full bg-[#041534] hover:bg-[#0c244c] disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-xs uppercase tracking-widest font-semibold py-4.5 rounded transition shadow flex justify-center items-center gap-2 touch-manipulation"
             >
-              💼 Add Complete Set to Bag
+              Add Complete Set to Bag
             </button>
             <p className="text-[11px] text-stone-500 text-center font-light">
               Taxes and free priority delivery included for all Sanctuary Bundles.

@@ -1,11 +1,18 @@
 import './globals.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/700.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import { CartProvider } from '@/context/CartContext';
 import { RegionProvider } from '@/context/RegionContext';
 import { CartDrawer } from '@/components/CartDrawer';
 import { NavBagButton } from '@/components/NavBagButton';
-import { RegionSwitcher, RegionPaymentBadges } from '@/components/RegionSwitcher';
+import { RegionSwitcher, RegionPaymentBadges, RegionShippingNote } from '@/components/RegionSwitcher';
 import { DEFAULT_REGION, REGION_COOKIE, REGION_HEADER, REGIONS, parseRegion } from '@/lib/region';
 
 export const metadata: Metadata = {
@@ -36,20 +43,28 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
         <RegionProvider initialRegion={initialRegion}>
         <CartProvider>
-          <header className="sticky top-0 z-40 bg-indigo-950 text-stone-100 border-b border-gold-500/30 shadow-md">
+          <div className="bg-indigo-950 text-center py-2 px-4 border-b border-gold-500/20">
+            <RegionShippingNote className="text-[11px] tracking-[0.14em] uppercase text-gold-300/90 font-light" />
+          </div>
+          <header className="sticky top-0 z-40 bg-indigo-950/97 backdrop-blur text-stone-100 border-b border-gold-500/20">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-              <div className="flex items-center space-x-8">
-                <a href="/" className="text-2xl font-serif tracking-wider text-gold-400 uppercase">
-                  The Indigo Fable
+              <div className="flex items-center gap-10">
+                <a href="/" className="flex flex-col leading-none group">
+                  <span className="text-[22px] font-serif font-semibold tracking-[0.18em] text-stone-50 uppercase group-hover:text-gold-300 transition-colors">
+                    The Indigo Fable
+                  </span>
+                  <span className="text-[9px] tracking-[0.42em] uppercase text-gold-400/80 mt-1.5">
+                    Jaipur · Est. Heritage Craft
+                  </span>
                 </a>
-                <nav className="hidden md:flex space-x-6 text-sm uppercase tracking-widest text-stone-300 font-medium">
-                  <a href="/" className="hover:text-gold-400 transition">Home</a>
-                  <a href="/collections/quilts" className="hover:text-gold-400 transition">Quilts</a>
-                  <a href="/collections/fragrances" className="hover:text-gold-400 transition">Home Fragrances</a>
-                  <a href="/bundles" className="hover:text-gold-400 transition">Sensory Bundles</a>
+                <nav className="hidden lg:flex gap-8 text-[11px] uppercase tracking-[0.18em] text-stone-300 font-medium">
+                  <a href="/collections/quilts" className="hover:text-gold-300 transition-colors py-1 border-b border-transparent hover:border-gold-400/60">Quilts</a>
+                  <a href="/collections/sheets" className="hover:text-gold-300 transition-colors py-1 border-b border-transparent hover:border-gold-400/60">Fine Linens</a>
+                  <a href="/collections/fragrances" className="hover:text-gold-300 transition-colors py-1 border-b border-transparent hover:border-gold-400/60">Home Fragrance</a>
+                  <a href="/bundles" className="text-gold-400 hover:text-gold-300 transition-colors py-1 border-b border-transparent hover:border-gold-400/60">Sensory Sanctuary</a>
                 </nav>
               </div>
-              <div className="flex items-center space-x-4 md:space-x-6">
+              <div className="flex items-center gap-3 md:gap-5">
                 <RegionSwitcher />
                 <NavBagButton />
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { X, PenLine, Lock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useRegion } from '@/context/RegionContext';
 import { RegionPaymentBadges } from '@/components/RegionSwitcher';
@@ -61,7 +62,7 @@ export default function CartPage() {
                         aria-label="Remove item" 
                         className="text-stone-400 hover:text-red-600 transition-colors touch-manipulation"
                       >
-                        <span className="text-xl">✕</span>
+                        <X className="h-5 w-5" strokeWidth={1.5} />
                       </button>
                     </div>
                     {item.variantTitle && (
@@ -98,7 +99,7 @@ export default function CartPage() {
             {/* Gift Message Section */}
             <div className="mt-4 p-6 bg-[#F5F0EA] rounded-xl border border-stone-200">
               <div className="flex items-center gap-2 mb-4 text-[#0F172A]">
-                <span className="text-xl">📝</span>
+                <PenLine className="h-5 w-5" strokeWidth={1.5} />
                 <h4 className="text-base font-serif font-semibold">Add a Gift Message or Note</h4>
               </div>
               <textarea 
@@ -136,7 +137,7 @@ export default function CartPage() {
                 onClick={handleCheckout}
                 className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.2em] py-4 rounded font-semibold flex items-center justify-center gap-2 transition shadow touch-manipulation"
               >
-                🔒 SECURE CHECKOUT
+                <Lock className="h-3.5 w-3.5" strokeWidth={2} /> SECURE CHECKOUT
               </button>
               <p className="text-xs text-stone-500 text-center mt-4">
                 {region.shippingNote}

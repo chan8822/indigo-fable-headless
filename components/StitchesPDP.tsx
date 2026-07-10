@@ -197,7 +197,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
             onClick={handleAddToCart}
             className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.25em] font-semibold py-4.5 rounded transition flex justify-center items-center gap-2 mb-3 shadow-md touch-manipulation"
           >
-            {offersTrilogy && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
+            {offersTrilogy && isTrilogy ? 'Add Trilogy to Bag' : 'Add to Bag'}
           </button>
           <p className="text-xs text-stone-500 text-center mb-6">
             {region.shippingNote}

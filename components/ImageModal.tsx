@@ -1,5 +1,6 @@
 'use client';
 
+import { ZoomIn, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 interface Image {
@@ -52,13 +53,12 @@ export function ImageModal({ images, initialIndex, isOpen, onClose }: ImageModal
             onClick={() => setIsZoomed(!isZoomed)}
             className="bg-indigo-900/60 hover:bg-indigo-900 text-stone-200 px-4 py-2 rounded-full border border-gold-500/30 text-xs font-medium uppercase tracking-wider transition"
           >
-            {isZoomed ? '🔍 Reset Zoom' : '🔍 2x High-Res Zoom'}
+            <span className="flex items-center gap-1.5"><ZoomIn className="h-4 w-4" strokeWidth={1.5} /> {isZoomed ? 'Reset Zoom' : '2x High-Res Zoom'}</span>
           </button>
           <button 
             onClick={onClose}
             className="w-10 h-10 rounded-full bg-indigo-900/60 hover:bg-rose-900/60 text-stone-200 border border-gold-500/30 flex items-center justify-center text-lg transition"
-          >
-            ✕
+          ><X className="h-5 w-5" strokeWidth={1.5} />
           </button>
         </div>
       </div>

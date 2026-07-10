@@ -8,15 +8,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Brand navy — matches the #041534 used across page surfaces
         indigo: {
-          900: '#1a237e',
-          950: '#0d1137',
+          900: '#0C244C',
+          950: '#041534',
         },
         gold: {
-          400: '#d4af37',
-          500: '#c5a059',
-        }
-      }
+          300: '#E3C878',
+          400: '#D4AF37',
+          500: '#C6A15B',
+          600: '#A98734',
+        },
+        ivory: '#F5F0EA',
+      },
+      fontFamily: {
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      letterSpacing: {
+        luxe: '0.25em',
+      },
     },
   },
   plugins: [],
