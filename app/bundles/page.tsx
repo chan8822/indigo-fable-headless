@@ -35,7 +35,12 @@ export default function BundleBuilderPage() {
       .catch(() => setLoading(false));
   }, []);
 
-  const quilts = products.filter(p => p.handle.includes('quilt') || p.title.toLowerCase().includes('quilt'));
+  const quilts = products.filter(p =>
+    p.handle.includes('quilt') ||
+    p.handle.includes('razai') ||
+    p.handle.includes('rajai') ||
+    p.title.toLowerCase().includes('quilt')
+  );
   const scents = products.filter(p => p.handle.includes('incense') || p.handle.includes('dhoop'));
 
   // Scent recommendation mapping logic

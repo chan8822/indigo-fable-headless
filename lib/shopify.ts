@@ -1,5 +1,8 @@
 const DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || "i0ch0y-kq.myshopify.com";
 const ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN || "";
+// Live storefront domain whose public /products.json mirrors the same store —
+// used as a tokenless fallback when the Admin API is unavailable.
+const PUBLIC_STORE_URL = process.env.NEXT_PUBLIC_STORE_URL || "https://theindigofable.com";
 
 export interface ShopifyProduct {
   id: string;
@@ -49,6 +52,49 @@ export async function shopifyGraphQLFetch<T>(query: string, variables = {}): Pro
   } catch (err) {
     console.error('GraphQL network/JSON parse error:', err);
     return null;
+  }
+}
+
+interface PublicProductJson {
+  id: number;
+  title: string;
+  handle: string;
+  body_html: string;
+  vendor: string;
+  tags: string[];
+  variants: { id: number; title: string; price: string; available?: boolean }[];
+  images: { src: string; alt?: string | null }[];
+}
+
+/** Tokenless catalog read from the live store's public /products.json. */
+export async function getPublicCatalog(): Promise<ShopifyProduct[]> {
+  try {
+    const res = await fetch(`${PUBLIC_STORE_URL}/products.json?limit=250`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { products?: PublicProductJson[] };
+    if (!json.products) return [];
+    return json.products.map((p) => ({
+      id: `gid://shopify/Product/${p.id}`,
+      title: p.title,
+      handle: p.handle,
+      descriptionHtml: p.body_html || "",
+      vendor: p.vendor || "The Indigo Fable",
+      variants: p.variants.map((v) => ({
+        id: `gid://shopify/ProductVariant/${v.id}`,
+        title: v.title,
+        price: v.price,
+      })),
+      images: p.images.map((img) => ({
+        src: img.src,
+        alt: img.alt || p.title,
+      })),
+      tags: p.tags,
+    }));
+  } catch (err) {
+    console.error("Public catalog fetch error:", err);
+    return [];
   }
 }
 
@@ -122,8 +168,9 @@ export async function getLiveProducts(): Promise<ShopifyProduct[]> {
   const data = await shopifyGraphQLFetch<ProductsQueryResult>(query);
 
   if (!data || !data.products) {
-    console.warn("Falling back to mocks only due to failed GraphQL query");
-    return getMockProducts();
+    console.warn("Admin GraphQL unavailable; falling back to public catalog + fragrance mocks");
+    const publicCatalog = await getPublicCatalog();
+    return [...publicCatalog, ...getMockProducts()];
   }
 
   const live: ShopifyProduct[] = data.products.edges.map(({ node }) => ({
@@ -159,7 +206,7 @@ function getMockProducts(): ShopifyProduct[] {
       scent_profile: "Damask Rose, Vetiver (Khus), and Wet Earth (Geosmin)",
       ingredients: "100% Charcoal-Free dry wood dust base, wild harvested vetiver root powder, Kannauj rose essential oil.",
       burn_time: "45-60 minutes per stick",
-      textile_synergy_link: "the-indigo-gold-hand-stitched-organic-cotton-quilt",
+      textile_synergy_link: "indigo-gold-hand-stitched-organic-cotton-quilt-single",
       tags: ["fragrance-type:bambooless", "collection:jaipuri-rose"]
     },
     {
@@ -173,7 +220,7 @@ function getMockProducts(): ShopifyProduct[] {
       scent_profile: "Kashmiri Lavender, Mysore Sandalwood, Frankincense",
       ingredients: "Organic guar gum binder, sandalwood powder base, Kashmiri lavender oil, natural Frankincense resin.",
       burn_time: "45-60 minutes per stick",
-      textile_synergy_link: "the-indigo-gold-hand-stitched-organic-cotton-quilt",
+      textile_synergy_link: "indigo-gold-hand-stitched-organic-cotton-quilt-single",
       tags: ["fragrance-type:bambooless", "collection:indigo-nights"]
     },
     {
@@ -187,7 +234,7 @@ function getMockProducts(): ShopifyProduct[] {
       scent_profile: "Earthy Guggul Resin, Sweet Amber, Cedarwood",
       ingredients: "Hand-pressed guggul tree gum resin, amber powder, Himalayan cedarwood dust.",
       burn_time: "30-40 minutes per cone",
-      textile_synergy_link: "the-indigo-gold-hand-stitched-organic-cotton-quilt",
+      textile_synergy_link: "indigo-gold-hand-stitched-organic-cotton-quilt-single",
       tags: ["fragrance-type:dhoop", "collection:sacred-guggul"]
     }
   ];
@@ -258,7 +305,10 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
 
   try {
     const data = await shopifyGraphQLFetch<SingleProductResult>(query, { handle });
-    if (!data || !data.productByHandle) return null;
+    if (!data || !data.productByHandle) {
+      const publicCatalog = await getPublicCatalog();
+      return publicCatalog.find((p) => p.handle === handle) || null;
+    }
 
     const node = data.productByHandle;
     return {

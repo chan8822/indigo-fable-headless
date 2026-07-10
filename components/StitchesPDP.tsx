@@ -299,34 +299,34 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Card 1 */}
-          <div className="group cursor-pointer flex flex-col gap-3">
+          <a href="/products/jaipuri-hand-block-printed-bedsheet-set-pink-floral" className="group cursor-pointer flex flex-col gap-3">
             <div className="aspect-square bg-stone-100 rounded-2xl overflow-hidden border border-stone-200">
-              <img 
-                className="w-full h-full object-cover group-hover:scale-103 transition duration-500" 
-                alt="Indigo pillowcase set"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzHDFJ2hWy4M-iF1Z01vvdmWDmST_yX-91FGd_bC2P0eC2-CRh0dYxphRnLN72GIuZKV4N67lin4kWCJVWT1nTfx5Na5L2v55fw1yAkt90hmQGnFSiEWwmY9K1gDIKK8uDwBTujpqEs1_dbgPeCQLr9L2dlDsptoyEb2SkPfm0C3uDF5GlvZURkC01_Ljv13yLkwh2ycrDajTq4gq265nYECKDTJsvVwbAGlrPIwylTrt01RGUhAcrDzo2PgPgA5N2oONm3oB3QW8y"
+              <img
+                className="w-full h-full object-cover group-hover:scale-103 transition duration-500"
+                alt="The Jaipur Rose Sheet Set"
+                src="https://cdn.shopify.com/s/files/1/0961/5497/6620/files/jaipuri-hand-block-print_a81bba04-66f7-403a-ad56-3edb344a4576.png?v=1773769106"
               />
             </div>
             <h3 className="font-serif text-[#0F172A] text-base group-hover:text-[#D4AF37] transition">
-              Heritage Indigo Pillowcase Set
+              The Jaipur Rose Sheet Set
             </h3>
-            <p className="text-sm text-stone-600 font-medium">{formatPrice(2499)}</p>
-          </div>
-          
+            <p className="text-sm text-stone-600 font-medium">{formatPrice(9499)}</p>
+          </a>
+
           {/* Card 2 */}
-          <div className="group cursor-pointer flex flex-col gap-3">
+          <a href="/products/golden-sunshine-kantha-quilt-hand-stitched-paisley-peacock-design" className="group cursor-pointer flex flex-col gap-3">
             <div className="aspect-square bg-stone-100 rounded-2xl overflow-hidden border border-stone-200">
-              <img 
-                className="w-full h-full object-cover group-hover:scale-103 transition duration-500" 
-                alt="Mulmul cotton sheet set"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGxJ0nKV9QjcDoTkNzIldZR2k18mAYZPjd1u3YbKAiTOo0AP6EqwyKVmjWvyxKAMP3UUFt6_BbKXjIvVbcJX8A62JZT2R1liww6tK5ekfudRyDGgdGtJU5Ek8cIs17Cfw0t-qT-NiO3s12LePcFJoPKI4jDbDTn1IgMHW8OFKpMuXE4HSISuy1FTR3O3njxFDsFFGx7RpluU0SFYNNntke1Ugv28c_yLlYVUsDyXy3ulW6bSnIkzR0q7vxnEENkVHHf_oS2iTKYuEi"
+              <img
+                className="w-full h-full object-cover group-hover:scale-103 transition duration-500"
+                alt="The Saffron Paisley Kantha Throw"
+                src="https://cdn.shopify.com/s/files/1/0961/5497/6620/files/IMGL1877.jpg?v=1773771866"
               />
             </div>
             <h3 className="font-serif text-[#0F172A] text-base group-hover:text-[#D4AF37] transition">
-              Organic Mulmul Sheet Set
+              The Saffron Paisley Kantha Throw
             </h3>
-            <p className="text-sm text-stone-600 font-medium">{formatPrice(8499)}</p>
-          </div>
+            <p className="text-sm text-stone-600 font-medium">{formatPrice(13499)}</p>
+          </a>
         </div>
       </section>
     </main>
