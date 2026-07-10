@@ -196,6 +196,22 @@ export async function getLiveProducts(): Promise<ShopifyProduct[]> {
 function getMockProducts(): ShopifyProduct[] {
   return [
     {
+      // Real sourced product — specs and pricing from the Bansi Dhoop supplier
+      // catalog (Drive). Swap the id/variant for Shopify GIDs once listed.
+      id: "sourced-fragrance-bansi-rg",
+      title: "The Rajnigandha Ritual Dhoop",
+      handle: "rajnigandha-tuberose-ritual-dhoop-sticks",
+      descriptionHtml: "Hand-rolled tuberose dhoop from a Rajasthani atelier perfecting the craft since 2000. Each stick is rolled 3.5x thicker than common incense for a dense, slow-burning infusion of pure essential oil — no charcoal, no chemical binders. A hand-finished ceramic stand rests inside every box.",
+      vendor: "The Indigo Fable",
+      variants: [{ id: "sourced-variant-bansi-rg-100", title: "Ritual Box (100g · ~27 sticks + ceramic stand)", price: "149.00" }],
+      images: [{ src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBrZ2Y82xlJUQSIKI3hUPzyMB4IZyqr-T0uGWdy3Ix96O8fGu7DieQQ3kssyiA-7R6zo-DE7577gQ0XYMNuznhL3cDDcZJsSYWxm8JiLvOF4VZvYqDqZvWe1BGzPBcYxZ7P5WiDeRomLBzlyqgSE05QXIK0Bk9PiuK9KKF3yQ6r-yr78trsHA_XCL2ReozQnYhEAtpVX88hOfmzBaMIx4AhRKCAJrNRlSQ5z0sX9lFp8hDFrtqb6NJfDmyqo4Wzmo4sOBSvVUXEDMVT", alt: "Rajnigandha Ritual Dhoop" }],
+      scent_profile: "Rajnigandha (Tuberose) — sweet, calming night-blooming floral",
+      ingredients: "Natural tree resins, pure essential oils, and aromatic herbs. 100% charcoal-free, hand-rolled.",
+      burn_time: "30-40 minutes per stick",
+      textile_synergy_link: "jaipuri-hand-block-printed-bedsheet-set-pink-floral",
+      tags: ["fragrance-type:dhoop", "collection:rajnigandha"]
+    },
+    {
       id: "mock-fragrance-1",
       title: "Jaipuri Rose & Monsoon Rain Incense",
       handle: "jaipuri-rose-monsoon-rain-incense",

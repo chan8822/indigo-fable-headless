@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRegion } from '@/context/RegionContext';
 import { ShopifyProduct } from '@/lib/shopify';
+import { getProvenance } from '@/lib/catalog-meta';
 
 interface StitchesPDPProps {
   product: ShopifyProduct;
@@ -17,6 +18,9 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
   const [isTrilogy, setIsTrilogy] = useState(false); // Multi-buy widget state
 
   const isFragrance = product.handle.includes('incense') || product.handle.includes('dhoop');
+  const provenance = getProvenance(product.handle);
+  // The Trilogy multi-buy (3 boxes for ₹799) applies to the ₹299 incense boxes only.
+  const offersTrilogy = isFragrance && Math.round(Number(selectedVariant.price)) === 299;
 
   const getScentPairing = () => {
     if (product.handle.includes('rose')) {
@@ -36,13 +40,13 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
   };
 
   const handleAddToCart = () => {
-    const finalPrice = isFragrance && isTrilogy ? "266.33" : selectedVariant.price; // 799 / 3 = 266.33
-    const finalQty = isFragrance && isTrilogy ? 3 : 1;
+    const finalPrice = offersTrilogy && isTrilogy ? "266.33" : selectedVariant.price; // 799 / 3 = 266.33
+    const finalQty = offersTrilogy && isTrilogy ? 3 : 1;
 
     addItem({
       id: selectedVariant.id,
       title: product.title,
-      variantTitle: isFragrance && isTrilogy ? "Trilogy Pack (3 boxes)" : (selectedVariant.title || activeSize),
+      variantTitle: offersTrilogy && isTrilogy ? "Trilogy Pack (3 boxes)" : (selectedVariant.title || activeSize),
       price: finalPrice,
       quantity: finalQty,
       image: product.images[0]?.src || '',
@@ -121,13 +125,13 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
           </p>
 
           <div className="text-2xl font-serif text-slate-900 mb-8">
-            {isFragrance && isTrilogy ? formatPrice(799) : formatPrice(selectedVariant.price)}
+            {offersTrilogy && isTrilogy ? formatPrice(799) : formatPrice(selectedVariant.price)}
             {!isFragrance && (
               <span className="text-sm font-sans text-stone-400 ml-3 line-through">
                 {formatPrice(Number(selectedVariant.price) * 1.25)}
               </span>
             )}
-            {isFragrance && isTrilogy && (
+            {offersTrilogy && isTrilogy && (
               <span className="text-xs font-sans text-emerald-600 ml-3 font-semibold">
                 (Save {formatPrice(98)} on Trilogy Pack!)
               </span>
@@ -135,7 +139,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
           </div>
 
           {/* Scent selector / Trilogy Pack Multi-Buy Widget */}
-          {isFragrance ? (
+          {offersTrilogy ? (
             <div className="mb-8">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-xs uppercase tracking-wider text-slate-900 font-semibold">Choose Pack Size</span>
@@ -163,7 +167,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                 </button>
               </div>
             </div>
-          ) : (
+          ) : isFragrance ? null : (
             /* Textile Size Selector */
             <div className="mb-8">
               <div className="flex justify-between items-center mb-3">
@@ -193,7 +197,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
             onClick={handleAddToCart}
             className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.25em] font-semibold py-4.5 rounded transition flex justify-center items-center gap-2 mb-3 shadow-md touch-manipulation"
           >
-            {isFragrance && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
+            {offersTrilogy && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
           </button>
           <p className="text-xs text-stone-500 text-center mb-6">
             {region.shippingNote}
@@ -238,6 +242,37 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                     <li><strong>Scent Profile:</strong> {product.scent_profile}</li>
                     <li><strong>Ingredients:</strong> {product.ingredients}</li>
                   </ul>
+                ) : provenance ? (
+                  <div>
+                    <dl className="grid grid-cols-1 gap-y-2">
+                      {[
+                        ['Artisan Origin', provenance.artisanOrigin],
+                        ['Craft Technique', provenance.craftTechnique],
+                        ['Dye', provenance.dyeType],
+                        ['Material', provenance.materialComposition],
+                        ['Fabric Weight', provenance.fabricWeight],
+                        ['Warmth', provenance.warmthRating],
+                        ['Dimensions', provenance.dimensionsIn],
+                        ['Care', provenance.careSummary],
+                        ['Packaging', provenance.packagingType],
+                      ].filter(([, v]) => v).map(([label, value]) => (
+                        <div key={label} className="flex justify-between gap-4 border-b border-stone-100 pb-1.5">
+                          <dt className="text-stone-500">{label}</dt>
+                          <dd className="text-right text-stone-700">{value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {(provenance.giftReady || provenance.plasticFree) && (
+                      <div className="flex gap-2 mt-4">
+                        {provenance.giftReady && (
+                          <span className="text-[10px] uppercase tracking-wider bg-amber-50 text-amber-700 px-3 py-1 border border-amber-100 font-semibold rounded-full">🎁 Gift-Ready</span>
+                        )}
+                        {provenance.plasticFree && (
+                          <span className="text-[10px] uppercase tracking-wider bg-emerald-50 text-emerald-700 px-3 py-1 border border-emerald-100 font-semibold rounded-full">🌿 Plastic-Free</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <ul className="list-disc pl-5 space-y-1.5">
                     <li>100% Organic Mulmul Cotton Shell & Filling</li>
