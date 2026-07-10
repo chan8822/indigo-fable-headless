@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 import { ShopifyProduct } from '@/lib/shopify';
 
 interface StitchesPDPProps {
@@ -10,6 +11,7 @@ interface StitchesPDPProps {
 
 export function StitchesPDP({ product }: StitchesPDPProps) {
   const { addItem } = useCart();
+  const { region, formatPrice } = useRegion();
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0] || { id: '', title: '', price: '0.00' });
   const [activeSize, setActiveSize] = useState('Double'); 
   const [isTrilogy, setIsTrilogy] = useState(false); // Multi-buy widget state
@@ -119,15 +121,15 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
           </p>
 
           <div className="text-2xl font-serif text-slate-900 mb-8">
-            ₹{isFragrance && isTrilogy ? '799.00' : Number(selectedVariant.price).toLocaleString('en-IN')}
+            {isFragrance && isTrilogy ? formatPrice(799) : formatPrice(selectedVariant.price)}
             {!isFragrance && (
               <span className="text-sm font-sans text-stone-400 ml-3 line-through">
-                ₹{(Number(selectedVariant.price) * 1.25).toLocaleString('en-IN')}
+                {formatPrice(Number(selectedVariant.price) * 1.25)}
               </span>
             )}
             {isFragrance && isTrilogy && (
               <span className="text-xs font-sans text-emerald-600 ml-3 font-semibold">
-                (Save ₹98 on Trilogy Pack!)
+                (Save {formatPrice(98)} on Trilogy Pack!)
               </span>
             )}
           </div>
@@ -147,7 +149,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                       : 'border-stone-200 text-stone-600 hover:border-black'
                   }`}
                 >
-                  Single Box (₹299)
+                  Single Box ({formatPrice(299)})
                 </button>
                 <button
                   onClick={() => setIsTrilogy(true)}
@@ -157,7 +159,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                       : 'border-stone-200 text-stone-600 hover:border-black'
                   }`}
                 >
-                  Trilogy Pack - 3 Boxes (₹799)
+                  Trilogy Pack - 3 Boxes ({formatPrice(799)})
                 </button>
               </div>
             </div>
@@ -194,7 +196,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
             {isFragrance && isTrilogy ? 'Add Trilogy to Bag ➔' : 'Add to Bag ➔'}
           </button>
           <p className="text-xs text-stone-500 text-center mb-6">
-            Complimentary shipping and COD available.
+            {region.shippingNote}
           </p>
 
           {/* Bedding Olfactory Pairing Injector Widget */}
@@ -218,7 +220,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
                 })}
                 className="bg-[#041534] hover:bg-slate-800 text-white text-[10px] uppercase tracking-wider px-3 py-2 font-semibold transition touch-manipulation"
               >
-                + Pair (₹{pairing.price})
+                + Pair ({formatPrice(pairing.price)})
               </button>
             </div>
           )}
@@ -308,7 +310,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
             <h3 className="font-serif text-[#0F172A] text-base group-hover:text-[#D4AF37] transition">
               Heritage Indigo Pillowcase Set
             </h3>
-            <p className="text-sm text-stone-600 font-medium">₹2,499.00</p>
+            <p className="text-sm text-stone-600 font-medium">{formatPrice(2499)}</p>
           </div>
           
           {/* Card 2 */}
@@ -323,7 +325,7 @@ export function StitchesPDP({ product }: StitchesPDPProps) {
             <h3 className="font-serif text-[#0F172A] text-base group-hover:text-[#D4AF37] transition">
               Organic Mulmul Sheet Set
             </h3>
-            <p className="text-sm text-stone-600 font-medium">₹8,499.00</p>
+            <p className="text-sm text-stone-600 font-medium">{formatPrice(8499)}</p>
           </div>
         </div>
       </section>

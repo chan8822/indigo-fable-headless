@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 import { OrderLookup } from '@/components/OrderLookup';
 
 interface ShopifyProduct {
@@ -17,6 +18,7 @@ export default function HomePage() {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const { addItem } = useCart();
+  const { formatPrice } = useRegion();
 
   useEffect(() => {
     fetch('/api/products')
@@ -223,7 +225,7 @@ export default function HomePage() {
                       {product.title}
                     </a>
                     <p className="text-sm text-[#D4AF37] font-semibold">
-                      ₹{Number(firstVariant.price).toLocaleString('en-IN')}
+                      {formatPrice(firstVariant.price)}
                     </p>
                   </div>
                 </div>

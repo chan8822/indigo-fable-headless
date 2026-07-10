@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 
 interface Variant {
   id: string;
@@ -28,6 +29,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
   const { addItem } = useCart();
+  const { formatPrice } = useRegion();
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
     product.variants[0] || { id: '0', title: 'Default', price: '0' }
   );
@@ -93,7 +95,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
               {product.vendor}
             </span>
             <span className="text-lg font-serif font-semibold text-indigo-950">
-              ₹{Number(selectedVariant.price).toLocaleString('en-IN')}
+              {formatPrice(selectedVariant.price)}
             </span>
           </div>
           <h3 className="text-xl font-serif text-indigo-950 group-hover:text-gold-500 transition-colors leading-snug">
@@ -134,7 +136,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
             onClick={handleAddToCart}
             className="flex-1 bg-indigo-950 hover:bg-indigo-900 text-stone-100 py-3.5 px-6 rounded-xl font-medium tracking-wider uppercase text-xs transition duration-300 shadow-md flex items-center justify-center space-x-2"
           >
-            <span>Add to Bag — ₹{Number(selectedVariant.price).toLocaleString('en-IN')}</span>
+            <span>Add to Bag — {formatPrice(selectedVariant.price)}</span>
           </button>
         </div>
       </div>

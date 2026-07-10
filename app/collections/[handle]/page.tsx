@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@/stitches.config';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 import { ShopifyProduct } from '@/lib/shopify';
 
 const Grid = styled('div', {
@@ -120,6 +121,7 @@ export default function CollectionPage({ params }: { params: { handle: string } 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { addItem } = useCart();
+  const { formatPrice } = useRegion();
 
   useEffect(() => {
     fetch('/api/products')
@@ -185,7 +187,7 @@ export default function CollectionPage({ params }: { params: { handle: string } 
                   {product.title}
                 </ProductTitle>
                 <ProductPrice>
-                  ₹{Number(firstVariant.price).toLocaleString('en-IN')}
+                  {formatPrice(firstVariant.price)}
                 </ProductPrice>
                 <Button onClick={() => addItem({
                   id: firstVariant.id,

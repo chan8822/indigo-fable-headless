@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 import { ShopifyProduct } from '@/lib/shopify';
 
 export default function BundleBuilderPage() {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const { addItem, openCart } = useCart();
+  const { formatPrice } = useRegion();
 
   // Step states
   const [step, setStep] = useState(1);
@@ -145,7 +147,7 @@ export default function BundleBuilderPage() {
                       <img className="w-full h-full object-cover" src={quilt.images[0]?.src} alt={quilt.title} />
                     </div>
                     <h3 className="text-sm font-serif text-[#0F172A] line-clamp-1">{quilt.title}</h3>
-                    <p className="text-xs text-[#D4AF37] font-semibold mt-1">₹{Number(quilt.variants[0]?.price).toLocaleString('en-IN')}</p>
+                    <p className="text-xs text-[#D4AF37] font-semibold mt-1">{formatPrice(quilt.variants[0]?.price || 0)}</p>
                   </div>
                 ))}
               </div>
@@ -184,7 +186,7 @@ export default function BundleBuilderPage() {
                           <h3 className="text-sm font-serif text-[#0F172A] line-clamp-1">{scent.title}</h3>
                           {isRec && <span className="text-[9px] uppercase tracking-wider bg-emerald-50 text-emerald-700 px-2 py-0.5 border border-emerald-100 font-bold shrink-0">Rec</span>}
                         </div>
-                        <p className="text-xs text-[#D4AF37] font-semibold mt-1">₹{Number(scent.variants[0]?.price).toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-[#D4AF37] font-semibold mt-1">{formatPrice(scent.variants[0]?.price || 0)}</p>
                       </div>
                     );
                   })}
@@ -216,7 +218,7 @@ export default function BundleBuilderPage() {
                     <img src={holderProduct.image} alt={holderProduct.title} className="w-16 h-16 object-cover rounded-md border border-stone-200" />
                     <div>
                       <h4 className="text-sm font-semibold text-slate-800">{holderProduct.title}</h4>
-                      <p className="text-xs text-stone-500 font-light mt-0.5">₹{Number(holderProduct.price).toLocaleString('en-IN')}</p>
+                      <p className="text-xs text-stone-500 font-light mt-0.5">{formatPrice(holderProduct.price)}</p>
                     </div>
                   </div>
                   <input 
@@ -243,17 +245,17 @@ export default function BundleBuilderPage() {
               {/* Quilt slot */}
               <div className="flex justify-between text-sm">
                 <span className="font-light">{selectedQuilt ? selectedQuilt.title : '1. Choose Bedding'}</span>
-                <span>{selectedQuilt ? `₹${quiltPrice.toLocaleString('en-IN')}` : '—'}</span>
+                <span>{selectedQuilt ? formatPrice(quiltPrice) : '—'}</span>
               </div>
               {/* Scent slot */}
               <div className="flex justify-between text-sm">
                 <span className="font-light">{selectedScent ? selectedScent.title : '2. Choose Fragrance'}</span>
-                <span>{selectedScent ? `₹${scentPrice.toLocaleString('en-IN')}` : '—'}</span>
+                <span>{selectedScent ? formatPrice(scentPrice) : '—'}</span>
               </div>
               {/* Holder slot */}
               <div className="flex justify-between text-sm">
                 <span className="font-light">{addHolder ? holderProduct.title : '3. Holder Excluded'}</span>
-                <span>{addHolder ? `₹${holderPrice.toLocaleString('en-IN')}` : '—'}</span>
+                <span>{addHolder ? formatPrice(holderPrice) : '—'}</span>
               </div>
             </div>
 
@@ -261,17 +263,17 @@ export default function BundleBuilderPage() {
             <div className="space-y-2 text-sm text-[#0F172A] border-b border-stone-200 pb-6">
               <div className="flex justify-between">
                 <span className="font-light">Original Subtotal</span>
-                <span>₹{originalSubtotal.toLocaleString('en-IN')}</span>
+                <span>{formatPrice(originalSubtotal)}</span>
               </div>
               <div className="flex justify-between text-emerald-600 font-semibold">
                 <span>Bundle Discount (15% Off)</span>
-                <span>-₹{(originalSubtotal * 0.15).toLocaleString('en-IN')}</span>
+                <span>-{formatPrice(originalSubtotal * 0.15)}</span>
               </div>
             </div>
 
             <div className="flex justify-between font-serif text-lg text-[#041534]">
               <span>Set Total</span>
-              <span className="font-bold text-xl">₹{bundleTotal.toLocaleString('en-IN')}</span>
+              <span className="font-bold text-xl">{formatPrice(bundleTotal)}</span>
             </div>
 
             <button 

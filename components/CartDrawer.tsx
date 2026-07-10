@@ -2,9 +2,15 @@
 
 import React from 'react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
+import { RegionPaymentBadges } from '@/components/RegionSwitcher';
+import { buildCheckoutUrl } from '@/lib/region';
+
+const SHOP_DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || 'i0ch0y-kq.myshopify.com';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, totalPrice, addItem } = useCart();
+  const { region, formatPrice, convertPrice, formatAmount, freeShippingThreshold } = useRegion();
 
   if (!isOpen) return null;
 
@@ -15,15 +21,14 @@ export function CartDrawer() {
       return `${cleanId}:${item.quantity}`;
     }).join(',');
 
-    const checkoutUrl = `https://i0ch0y-kq.myshopify.com/cart/${cartParts}`;
-    window.location.href = checkoutUrl;
+    window.location.href = buildCheckoutUrl(SHOP_DOMAIN, cartParts, region);
   };
 
-  // Shipping threshold check
-  const shippingThreshold = 1999;
-  const isFreeShipping = totalPrice >= shippingThreshold;
-  const difference = shippingThreshold - totalPrice;
-  const progressPercent = Math.min((totalPrice / shippingThreshold) * 100, 100);
+  // Region-localized shipping-protection threshold (₹1,999 in India, C$65 west)
+  const displayTotal = convertPrice(totalPrice);
+  const isFreeShipping = displayTotal >= freeShippingThreshold;
+  const difference = freeShippingThreshold - displayTotal;
+  const progressPercent = Math.min((displayTotal / freeShippingThreshold) * 100, 100);
 
   // Cross-sell logic
   const hasTextile = items.some(item => 
@@ -77,9 +82,9 @@ export function CartDrawer() {
                   {isFreeShipping ? (
                     <span className="text-emerald-400 font-semibold">🎉 You've unlocked Free Shipping!</span>
                   ) : (
-                    <span>Add <strong className="text-gold-400">₹{difference.toLocaleString('en-IN')}</strong> more for Free Shipping</span>
+                    <span>Add <strong className="text-gold-400">{formatAmount(difference)}</strong> more for Free Shipping</span>
                   )}
-                  <span>₹{totalPrice.toLocaleString('en-IN')} / ₹{shippingThreshold.toLocaleString('en-IN')}</span>
+                  <span>{formatAmount(displayTotal)} / {formatAmount(freeShippingThreshold)}</span>
                 </div>
                 <div className="h-1.5 w-full bg-stone-800 rounded-full overflow-hidden">
                   <div 
@@ -126,7 +131,7 @@ export function CartDrawer() {
                         >+</button>
                       </div>
                       <span className="text-xs font-semibold text-stone-200">
-                        ₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}
+                        {formatPrice(Number(item.price) * item.quantity)}
                       </span>
                     </div>
                   </div>
@@ -149,7 +154,7 @@ export function CartDrawer() {
                   <img src={promoProduct.image} alt={promoProduct.title} className="w-10 h-12 object-cover rounded border border-stone-700" />
                   <div>
                     <h4 className="text-xs font-semibold text-stone-200 line-clamp-1">{promoProduct.title}</h4>
-                    <p className="text-[10px] text-gold-400">One-time offer: ₹{promoProduct.price} <span className="line-through text-stone-500 ml-1">₹299</span></p>
+                    <p className="text-[10px] text-gold-400">One-time offer: {formatPrice(promoProduct.price)} <span className="line-through text-stone-500 ml-1">{formatPrice(299)}</span></p>
                   </div>
                 </div>
                 <button
@@ -170,11 +175,12 @@ export function CartDrawer() {
 
             <div className="flex justify-between items-center text-sm font-medium text-stone-300">
               <span>Subtotal</span>
-              <span className="text-lg font-serif text-gold-400">₹{totalPrice.toLocaleString('en-IN')}</span>
+              <span className="text-lg font-serif text-gold-400">{formatPrice(totalPrice)}</span>
             </div>
             <p className="text-[11px] text-stone-400 font-light">
-              Taxes and insured delivery calculated at secure checkout.
+              {region.shippingNote} Taxes and insured delivery calculated at secure checkout.
             </p>
+            <RegionPaymentBadges tone="dark" />
             <button 
               onClick={handleCheckout}
               disabled={items.length === 0}

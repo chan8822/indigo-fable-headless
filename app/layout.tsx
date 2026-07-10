@@ -1,12 +1,24 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { cookies, headers } from 'next/headers';
 import { CartProvider } from '@/context/CartContext';
+import { RegionProvider } from '@/context/RegionContext';
 import { CartDrawer } from '@/components/CartDrawer';
 import { NavBagButton } from '@/components/NavBagButton';
+import { RegionSwitcher, RegionPaymentBadges } from '@/components/RegionSwitcher';
+import { DEFAULT_REGION, REGION_COOKIE, REGION_HEADER, REGIONS, parseRegion } from '@/lib/region';
 
 export const metadata: Metadata = {
   title: 'The Indigo Fable | Artisanal Hand-Stitched Quilts & Living',
   description: 'Heirloom-quality tagai stitching, organic cotton fills, and signature Khadi prints with gold-dust highlights.',
+  alternates: {
+    languages: {
+      'en-IN': `https://${REGIONS.in.domain}`,
+      'en-CA': `https://${REGIONS.ca.domain}`,
+      'en-US': `https://${REGIONS.ca.domain}`,
+      'x-default': `https://${REGIONS.in.domain}`,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -14,9 +26,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const initialRegion =
+    parseRegion(headers().get(REGION_HEADER)) ??
+    parseRegion(cookies().get(REGION_COOKIE)?.value) ??
+    DEFAULT_REGION;
+
   return (
-    <html lang="en">
+    <html lang={REGIONS[initialRegion].hreflang}>
       <body className="min-h-screen flex flex-col bg-stone-50 text-stone-900">
+        <RegionProvider initialRegion={initialRegion}>
         <CartProvider>
           <header className="sticky top-0 z-40 bg-indigo-950 text-stone-100 border-b border-gold-500/30 shadow-md">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -31,7 +49,8 @@ export default function RootLayout({
                   <a href="/bundles" className="hover:text-gold-400 transition">Sensory Bundles</a>
                 </nav>
               </div>
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-4 md:space-x-6">
+                <RegionSwitcher />
                 <NavBagButton />
               </div>
             </div>
@@ -85,11 +104,15 @@ export default function RootLayout({
                 </div>
               </div>
             </div>
-            <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-indigo-900/60 text-xs text-center text-stone-500">
-              © {new Date().getFullYear()} The Indigo Fable. Headless Storefront powered by Shopify & Next.js.
+            <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-indigo-900/60 flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-stone-500">
+                © {new Date().getFullYear()} The Indigo Fable. Headless Storefront powered by Shopify & Next.js.
+              </p>
+              <RegionPaymentBadges tone="dark" />
             </div>
           </footer>
         </CartProvider>
+        </RegionProvider>
       </body>
     </html>
   );
