@@ -77,53 +77,70 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="bg-indigo-950 text-stone-400 py-16 border-t border-gold-500/20">
-            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+          <footer className="bg-indigo-950 text-stone-300 border-t border-gold-500/20">
+            <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
               <div>
-                <h3 className="text-lg font-serif text-gold-400 uppercase tracking-wider mb-4">The Indigo Fable</h3>
-                <p className="text-sm leading-relaxed text-stone-300">
-                  Crafting luxury artisanal textiles and organic home comforts that celebrate timeless heritage and meticulous hand-stitching.
+                <a href="/" className="inline-block touch-manipulation">
+                  <span className="text-xl font-serif font-semibold tracking-[0.18em] uppercase text-stone-50">
+                    The Indigo Fable
+                  </span>
+                </a>
+                <p className="mt-5 text-sm font-light leading-relaxed text-stone-400">
+                  Hand-block prints and tagai-quilted layers from Jaipur ateliers,
+                  finished with botanical incense for slow, storied living.
                 </p>
-              </div>
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold mb-4">Collections</h4>
-                <ul className="space-y-2 text-sm">
-                  <li><a href="/collections/quilts" className="hover:text-gold-400 transition">Organic Cotton Quilts</a></li>
-                  <li><a href="/collections/sheets" className="hover:text-gold-400 transition">Fine Bed Sheets</a></li>
-                  <li><a href="/collections/fragrances" className="hover:text-gold-400 transition">Home Fragrances</a></li>
-                  <li><a href="/bundles" className="hover:text-gold-400 transition">Sensory Sanctuary Bundles</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-200 font-semibold mb-4">Customer Care</h4>
-                <ul className="space-y-2 text-sm">
-                  <li><a href="/policies/shipping-policy" className="hover:text-gold-400 transition">Shipping & Delivery</a></li>
-                  <li><a href="/policies/refund-policy" className="hover:text-gold-400 transition">Refunds & Returns</a></li>
-                  <li><a href="/policies/privacy-policy" className="hover:text-gold-400 transition">Privacy Policy</a></li>
-                  <li><a href="/policies/terms-of-service" className="hover:text-gold-400 transition">Terms of Service</a></li>
-                  <li><a href="/policies/contact-information" className="hover:text-gold-400 transition">Contact Concierge</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-xs uppercase tracking-widest text-stone-200 font-semibold mb-4">Newsletter</h4>
-                <p className="text-xs text-stone-300 mb-4">Join our inner circle for private releases and bespoke textile drops.</p>
-                <div className="flex">
-                  <input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="bg-indigo-900/50 border border-gold-500/30 px-3 py-2 text-sm text-stone-100 placeholder-stone-400 rounded-l-md focus:outline-none focus:border-gold-400 w-full"
-                  />
-                  <button className="bg-gold-500 hover:bg-gold-400 text-indigo-950 font-medium px-4 py-2 text-sm rounded-r-md transition">
-                    Join
-                  </button>
+                <div className="mt-6">
+                  <RegionPaymentBadges tone="dark" />
                 </div>
               </div>
+              <div>
+                <h4 className="text-[11px] uppercase tracking-[0.25em] text-gold-400 font-semibold mb-5">Shop</h4>
+                <ul className="space-y-3">
+                  <li><a href="/collections/quilts" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Heirloom Quilts</a></li>
+                  <li><a href="/collections/sheets" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Fine Linens</a></li>
+                  <li><a href="/collections/robes" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Lounge Robes</a></li>
+                  <li><a href="/collections/fragrances" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Home Fragrance</a></li>
+                  <li><a href="/bundles" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Sensory Sanctuary</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-[11px] uppercase tracking-[0.25em] text-gold-400 font-semibold mb-5">Customer Care</h4>
+                <ul className="space-y-3">
+                  <li><a href="/policies/shipping-policy" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Shipping & Delivery</a></li>
+                  <li><a href="/policies/refund-policy" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Refunds & Returns</a></li>
+                  <li><a href="/policies/privacy-policy" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Privacy Policy</a></li>
+                  <li><a href="/policies/terms-of-service" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Terms of Service</a></li>
+                  <li><a href="/policies/contact-information" className="text-sm font-light hover:text-gold-300 transition-colors touch-manipulation">Contact Concierge</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-[11px] uppercase tracking-[0.25em] text-gold-400 font-semibold mb-5">Don&rsquo;t Miss a Thing</h4>
+                <p className="text-sm font-light leading-relaxed text-stone-400 mb-5">
+                  Be first to private releases, atelier stories, and small-batch prints.
+                </p>
+                <form className="rounded-full overflow-hidden flex bg-indigo-900/50 border border-gold-500/30">
+                  <input
+                    type="email"
+                    placeholder="Your email address"
+                    aria-label="Email address"
+                    className="bg-transparent px-5 py-3 text-sm text-stone-100 placeholder-stone-400 focus:outline-none flex-1 min-w-0"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-gold-400 hover:bg-gold-300 text-indigo-950 px-6 text-[11px] uppercase tracking-[0.18em] font-semibold transition-colors touch-manipulation"
+                  >
+                    Join
+                  </button>
+                </form>
+              </div>
             </div>
-            <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-indigo-900/60 flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-stone-500">
-                © {new Date().getFullYear()} The Indigo Fable. Headless Storefront powered by Shopify & Next.js.
-              </p>
-              <RegionPaymentBadges tone="dark" />
+            <div className="border-t border-indigo-900/60 py-6">
+              <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-3">
+                <p className="text-xs text-stone-500">
+                  © {new Date().getFullYear()} The Indigo Fable. All rights reserved.
+                </p>
+                <p className="text-xs text-stone-500">theindigofable.com · theindigofable.ca</p>
+              </div>
             </div>
           </footer>
         </CartProvider>
