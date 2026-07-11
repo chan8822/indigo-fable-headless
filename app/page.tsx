@@ -1,22 +1,100 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useCart } from '@/context/CartContext';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
+import { useRegion } from '@/context/RegionContext';
 import { OrderLookup } from '@/components/OrderLookup';
+import { ProductTile } from '@/components/ProductTile';
+import { Reveal } from '@/components/Reveal';
+import type { ShopifyProduct } from '@/lib/shopify';
 
-interface ShopifyProduct {
-  id: string;
-  title: string;
-  handle: string;
-  descriptionHtml: string;
-  variants: { id: string; price: string; title: string }[];
-  images: { src: string; alt: string }[];
+const HERO_IMAGE = 'https://cdn.shopify.com/s/files/1/0961/5497/6620/files/IMGL1908.jpg?v=1773771865';
+
+const BANNER_BEDDING_IMAGE = 'https://cdn.shopify.com/s/files/1/0961/5497/6620/files/indigo-quilt-lifestyle-shot-4.png?v=1770447036';
+
+const BANNER_RITUAL_IMAGE = 'https://cdn.shopify.com/s/files/1/0961/5497/6620/files/IMGL1877.jpg?v=1773771866';
+
+const STORY_IMAGE =
+  'https://cdn.shopify.com/s/files/1/0961/5497/6620/files/hanging-jaipuri-quilt-with-natural-lighting-and-wrinkles.png?v=1769581736';
+
+/* Canonical eyebrow — design-system.md §1.2 (mono-micro, uppercase). */
+const EYEBROW = 'font-mono text-[10.5px] uppercase tracking-[0.22em]';
+
+/* Keyword filters — kept in lockstep with /collections/[handle] */
+const isQuilt = (p: ShopifyProduct) =>
+  /quilt|razai|rajai/.test(p.handle) || p.title.toLowerCase().includes('quilt');
+const isSheet = (p: ShopifyProduct) =>
+  p.handle.includes('sheet') || p.title.toLowerCase().includes('sheet');
+const isRobe = (p: ShopifyProduct) =>
+  p.handle.includes('robe') || p.title.toLowerCase().includes('robe');
+/* Defensive: matches legacy handles/tags AND the Ember house's renamed
+   `ember-*` handles / `house:ember` tags while migration is in flight. */
+const isFragrance = (p: ShopifyProduct) => {
+  const handle = p.handle.toLowerCase();
+  const tags = p.tags ?? [];
+  return (
+    handle.includes('incense') ||
+    handle.includes('dhoop') ||
+    handle.startsWith('ember-') ||
+    tags.some(
+      (t) => t.includes('fragrance-type') || t.toLowerCase().startsWith('house:ember')
+    )
+  );
+};
+const isBeddingSet = (p: ShopifyProduct) => /bedding|set/.test(p.title.toLowerCase());
+
+const CATEGORY_DEFS: {
+  name: string;
+  href: string;
+  match: (p: ShopifyProduct) => boolean;
+}[] = [
+  { name: 'Quilts', href: '/collections/quilts', match: isQuilt },
+  { name: 'Bedding Sets', href: '/collections/bedding-sets', match: isBeddingSet },
+  { name: 'Fine Linens', href: '/collections/sheets', match: isSheet },
+  { name: 'Robes', href: '/collections/robes', match: isRobe },
+  { name: 'Home Fragrance', href: '/collections/fragrances', match: isFragrance },
+];
+
+const TABS = [
+  { key: 'best', label: 'Best Sellers' },
+  { key: 'new', label: 'New Arrivals' },
+  { key: 'aromatics', label: 'Aromatics' },
+] as const;
+
+type TabKey = (typeof TABS)[number]['key'];
+
+const HOUSES = [
+  {
+    numeral: 'I',
+    eyebrow: 'House I · Jaipur',
+    name: 'The Loom',
+    line: 'Cloth cut for the long keeping — printed once, handed down for a generation.',
+    href: '/collections/quilts',
+  },
+  {
+    numeral: 'II',
+    eyebrow: 'House II · Meerut',
+    name: 'The Ember',
+    line: 'An hour kept in smoke — one hand-rolled stick, lit, blown out, and let to finish.',
+    href: '/collections/ritual',
+  },
+];
+
+/* Light-band section header — madder eyebrow + serif H2 (§2.8). */
+function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div className="mb-12 md:mb-16 text-center space-y-3">
+      <p className={`${EYEBROW} text-madder`}>{eyebrow}</p>
+      <h2 className="text-h2 font-serif text-kohl">{title}</h2>
+    </div>
+  );
 }
 
 export default function HomePage() {
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const { addItem } = useCart();
+  const [activeTab, setActiveTab] = useState<TabKey>('best');
+  const { region, formatAmount, freeShippingThreshold } = useRegion();
 
   useEffect(() => {
     fetch('/api/products')
@@ -28,293 +106,314 @@ export default function HomePage() {
       .catch(() => setLoading(false));
   }, []);
 
+  const categories = useMemo(
+    () =>
+      CATEGORY_DEFS.map((def) => {
+        const matches = products.filter(def.match);
+        return {
+          name: def.name,
+          href: def.href,
+          count: matches.length,
+          image: matches[0]?.images[0]?.src || '',
+        };
+      }),
+    [products]
+  );
+
+  const tabProducts = useMemo(() => {
+    if (activeTab === 'new') return [...products].slice(-8).reverse();
+    if (activeTab === 'aromatics') return products.filter(isFragrance).slice(0, 8);
+    return products.slice(0, 8);
+  }, [activeTab, products]);
+
+  const trustItems = [
+    `Complimentary shipping over ${formatAmount(freeShippingThreshold)}`,
+    'Hand-block printed in Jaipur · Hand-rolled in Meerut',
+    region.code === 'in'
+      ? 'UPI, cards & COD — pan-India 3–4 days'
+      : 'Cards, PayPal & Shop Pay — duties settled at checkout',
+  ];
+
   return (
-    <div className="space-y-24 pb-20">
-      
-      {/* Hero Section */}
-      <section className="relative h-[85vh] w-full overflow-hidden flex flex-col justify-end px-6 md:px-16 pb-16">
+    <div className="bg-khadi">
+      {/* 1. HeroThesis — §2.6 */}
+      <section className="relative flex h-[85vh] w-full flex-col justify-end overflow-hidden bg-indigo-deep px-6 pb-16 md:px-16">
         <div className="absolute inset-0 z-0">
-          <div 
-            className="w-full h-full bg-cover bg-center" 
-            style={{ backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0H5G9VWArUhKlY3IskGNfavU2LkNDQXeqjnGeyfgRhKj84K-urxhQJFI89f0qjiVrSRh5vXN4RYQz6Nppxf6jWWgTA-iyWpHG4FwQ27seMn8p9QKdXUlUpZi1BGyGgsVUsSp8acBSC2V5i4zgdXfJ-CGdXVeA6w4XAiCQLh-Ce8RjEkLmUJeZpdNNw9pM2cjqBEWvwMrCLku2ykfG7Nn04YM-nnsCzr9bYs9DtvCXYZOQbw-SKK4AQfbYXLfXZJsjHvRuyAU01JpU')` }}
+          <div
+            className="h-full w-full bg-cover bg-center"
+            style={{ backgroundImage: `url('${HERO_IMAGE}')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#041534]/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-indigo-deep via-indigo-deep/40 to-transparent" />
         </div>
-        <div className="relative z-10 space-y-6 max-w-2xl text-white">
-          <span className="text-xs uppercase tracking-[0.25em] text-stone-200 font-semibold block">
-            The Indigo Fable
-          </span>
-          <h2 className="text-4xl md:text-6xl font-serif leading-tight font-medium">
-            The Heritage of Jaipur, Woven for Your Home
-          </h2>
-          <p className="text-base md:text-lg opacity-90 max-w-lg font-light leading-relaxed">
-            Hand-block printed heirloom quilts, crafted slowly in Rajasthan.
+        <Reveal className="relative z-10 max-w-3xl space-y-6">
+          <p className={`${EYEBROW} text-khari`}>Houses of the Craft · India</p>
+          <h1 className="text-h1 font-serif text-khadi">
+            Every object here leaves with its record intact.
+          </h1>
+          <p className="max-w-lg text-base leading-relaxed text-dark-body md:text-lg">
+            The Fable keeps two houses — a printing atelier in Jaipur, a dhoopshala in
+            Meerut. Each piece is entered in the ledger as it is made: the maker, the
+            method, the batch, the days it took.
           </p>
-          <div className="flex pt-2">
-            <a 
-              href="#collection" 
-              className="bg-[#041534] hover:bg-[#0c244c] text-white px-8 py-4 text-xs uppercase tracking-widest font-semibold transition-all hover:translate-y-[-2px] active:scale-95 shadow-lg"
+          <div className="flex flex-wrap items-center gap-4 pt-3">
+            <a
+              href="/collections/quilts"
+              className={`${EYEBROW} rounded-full bg-khadi px-7 py-3.5 text-kohl transition-colors hover:bg-khadi-deep touch-manipulation`}
             >
-              Explore the Collection
+              Enter House I · The Loom
+            </a>
+            <a
+              href="/collections/ritual"
+              className={`${EYEBROW} rounded-full border border-khadi/60 px-7 py-3.5 text-khadi transition-colors hover:border-khadi hover:bg-khadi/10 touch-manipulation`}
+            >
+              Enter House II · The Ember
             </a>
           </div>
-        </div>
+        </Reveal>
       </section>
 
-      {/* Features Row */}
-      <section className="py-12 bg-[#F5F0EA] border-y border-stone-200/50">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 items-center text-center">
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">🚚</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Complimentary Shipping Across India
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">📐</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Handcrafted in Jaipur
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-2xl text-[#D4AF37]">💵</span>
-            <p className="text-[11px] uppercase tracking-widest text-[#041534] font-bold">
-              Cash on Delivery Available
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Shop by Craft */}
-      <section className="py-12 px-6 max-w-7xl mx-auto">
-        <div className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#D4AF37] mb-2 font-semibold">
-            Heritage Techniques
-          </p>
-          <h2 className="text-3xl md:text-4xl font-serif text-[#041534]">Shop by Craft</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {/* Category 1 */}
-          <a className="group block" href="/collections/quilts">
-            <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-stone-100 mb-6 relative border border-stone-200 shadow-sm">
-              <img 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLtCBgcx-G9rKHLLwnWSzdiB82XG8D_qe7E6qPRIFY1L_pMZOpZFCk0Ifjg2AUSBWPfHtPvOpUKmRVxxuAxIwpJH-vfb_Y4l_5uX_c_o6GaSDc_xHLhURjkm4xMq_JHoMIg9A8yzTqUl8_i_jiXiT99opDd77DOHEXOoaWKrY5pc3ynmj8EeJfFK_R8HwwtnUioB7XdaMRtKHDOlw19R0xJbzpGQWn9jWejQQD6Un-_WQM95iNjEzIjqpqiC"
-                alt="Jaipuri Quilts"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-            </div>
-            <h3 className="text-xl font-serif text-[#041534] mb-2">Jaipuri Quilts</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
-            </p>
-          </a>
-
-          {/* Category 2 */}
-          <a className="group block md:-mt-12" href="/collections/sheets">
-            <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-stone-100 mb-6 relative border border-stone-200 shadow-sm">
-              <img 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLsr2usY1Wj5hIWAg7-oRYQbnEEylPTt6lRirPoznQaxBB_TtwCZVqvllda5NwyuMGjnw8OSw3xYXwt-Osc4-aUEz-ACk4-1z2Hqa39b7s6MOyMTOv_Vgezb8wC6zPOXOP3sehYw2B6uJzI-fjYp2urL0L6KMI2DLQ7ptCHBT_aQmgimKUJQPFx2KxuyosAWO8dJvS03TDX18hqaBRZUKpsJLcSjoWtGaLoQY0kPKZYkbDLa7ax-VmJMQsia"
-                alt="Block-Printed Sheets"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-            </div>
-            <h3 className="text-xl font-serif text-[#041534] mb-2">Block-Printed Sheets</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
-            </p>
-          </a>
-
-          {/* Category 3 */}
-          <a className="group block" href="/collections/robes">
-            <div className="aspect-[2/3] overflow-hidden rounded-2xl bg-stone-100 mb-6 relative border border-stone-200 shadow-sm">
-              <img 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLtMPoJGgrGzpQiR6GcgtP0_-4EBRpe5gcm4coBR82O3ru5ihJ4cNTuyBwf0png4kTLBTo4BlV1RLngO7etG8Jt7y_cKNJqQBe0hG0z13-BgprIcxmMSgTG6qQJdYWK8CQ_f_qDKGYU9UF533k_hdJjDJYhl48wLSkqhxhA_XfPlsx70SjuhlXUol9zEhYce65e5j5XHqr0wpHgcU0UJfBSL69Ik5yTbWesQSxtrsgkeJhRIzcVlSar8NOBp"
-                alt="Waffle Robes"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-            </div>
-            <h3 className="text-xl font-serif text-[#041534] mb-2">Waffle Robes</h3>
-            <p className="text-sm text-stone-500 flex items-center gap-2 font-light">
-              Explore ➔
-            </p>
-          </a>
-        </div>
-      </section>
-
-      {/* Artisan Story Section */}
-      <section className="py-24 bg-[#F5F0EA] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16 relative z-10">
-          <div className="w-full md:w-1/2">
-            <div className="aspect-video overflow-hidden rounded-2xl shadow-md border border-stone-200">
-              <img 
-                className="w-full h-full object-cover" 
-                src="https://lh3.googleusercontent.com/aida/AP1WRLsd55eL8X84gorWWMBqbaIK2xKF8_9AiAMCTQegvzNU2-26OosrD1LTIPgaxzmAuYdTcoGFGc1aXNFoYDGNVCppSAeR1OabCIurIbJLf6yUSu44I0NGIuWWKCU3QS1pVeOC_UpVnygh0s3DUrOEazSk0p0hdSdxMqIB36-MLjvPDpLrQus97lsf6mu7ihO0J2YbGqe8xUbOVK7xxYSb5_x3NZO8mZsY5Npwbte4znZy5NCP5GIv70iygDA"
-                alt="Jaipur workshop block printing"
-              />
-            </div>
-          </div>
-          <div className="w-full md:w-1/2 space-y-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#D4AF37] font-semibold">
-              The Artisan Heritage
-            </p>
-            <h2 className="text-3xl font-serif text-[#041534]">Rooted in Tradition</h2>
-            <p className="text-lg md:text-xl text-stone-700 italic leading-relaxed font-light">
-              "Every piece at The Indigo Fable is a labour of love. From carved wooden blocks to hand-stitched tagai quilting, we honour the slow, intentional art of Indian textile making."
-            </p>
-            <div className="pt-4">
-              <a 
-                href="/policies/contact-information" 
-                className="inline-block border-b-2 border-[#D4AF37] pb-1 text-xs uppercase tracking-widest text-[#041534] font-semibold hover:text-[#D4AF37] transition-colors"
+      {/* 2. TwoHouses — §2.7 (permitted hero→houses dark→dark exception) */}
+      <section className="bg-indigo-deep">
+        <div className="grid md:grid-cols-2">
+          {HOUSES.map((house, i) => (
+            <Reveal key={house.numeral}>
+              <a
+                href={house.href}
+                className={`group relative flex min-h-[420px] flex-col justify-end overflow-hidden p-10 transition-colors duration-500 ease-fable hover:bg-indigo-card md:p-14 touch-manipulation ${
+                  i === 1 ? 'border-t border-indigo-edge md:border-l md:border-t-0' : ''
+                }`}
               >
-                Our Story
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -top-8 right-8 select-none font-serif text-[180px] leading-none text-khadi opacity-10"
+                >
+                  {house.numeral}
+                </span>
+                <div className="relative space-y-4">
+                  <p className={`${EYEBROW} text-khari`}>{house.eyebrow}</p>
+                  <h2 className="text-h2 font-serif text-khadi">{house.name}</h2>
+                  <p className="max-w-md font-serif text-essence italic text-dark-body">
+                    {house.line}
+                  </p>
+                  <span
+                    className={`${EYEBROW} inline-flex w-fit items-center gap-2 border-b border-khari/50 pb-1 text-ember transition-colors group-hover:text-khadi`}
+                  >
+                    Enter the house
+                    <ArrowRight
+                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                      strokeWidth={1.5}
+                    />
+                  </span>
+                </div>
+              </a>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. CategoryRing — §2.8, light band */}
+      <section className="bg-khadi px-6 py-16 md:py-24">
+        <Reveal className="mx-auto max-w-7xl">
+          <SectionHeader eyebrow="Across Both Houses" title="The Disciplines" />
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-5">
+            {categories.map((cat) => (
+              <a
+                key={cat.name}
+                href={cat.href}
+                className="group block text-center touch-manipulation"
+              >
+                <div className="relative aspect-square overflow-hidden rounded-full border border-kohl/15 bg-khadi-deep transition-colors group-hover:border-madder">
+                  {cat.image ? (
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="h-full w-full object-cover transition-transform duration-[900ms] ease-fable group-hover:scale-[1.05]"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-khadi-deep" />
+                  )}
+                </div>
+                <h3 className="mt-5 font-serif text-lg text-kohl transition-colors group-hover:text-madder md:text-xl">
+                  {cat.name}
+                </h3>
+                {cat.count > 0 && (
+                  <p className={`${EYEBROW} mt-1 text-kohl-soft`}>
+                    {cat.count} {cat.count === 1 ? 'piece' : 'pieces'}
+                  </p>
+                )}
+              </a>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* 4. SignatureLine — §2.9, the page's one aphorism */}
+      <section className="bg-khadi px-6 pb-16 md:pb-24">
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <p className="font-serif text-[clamp(22px,2.6vw,32px)] italic leading-snug text-kohl">
+            The dye will soften and the smoke will clear —{' '}
+            <strong className="font-semibold text-madder">the record remains</strong>.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* 5. From the Houses — featured tabs, light band */}
+      <section className="bg-khadi px-6 py-16 md:py-24">
+        <Reveal className="mx-auto max-w-7xl">
+          <SectionHeader eyebrow="From the Houses" title="The Edit" />
+          <div className="mb-12 flex flex-wrap items-center justify-center gap-3">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={`${EYEBROW} min-h-10 rounded-full px-6 py-2.5 transition-colors touch-manipulation ${
+                  activeTab === tab.key
+                    ? 'bg-kohl text-khadi'
+                    : 'border border-kohl/20 text-kohl-soft hover:text-kohl'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-madder border-t-transparent" />
+              <p className="text-sm text-kohl-soft">Unfolding the edit…</p>
+            </div>
+          ) : tabProducts.length === 0 ? (
+            <p className="py-12 text-center text-sm text-kohl-soft">
+              The houses are still preparing this edit — return shortly.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
+              {tabProducts.map((product) => (
+                <ProductTile key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </Reveal>
+      </section>
+
+      {/* 6. Split promo banners — khadi-deep copy plates */}
+      <section className="bg-khadi px-6 pb-16 md:pb-24">
+        <Reveal className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2">
+          <a
+            href="/collections/quilts"
+            className="group block overflow-hidden rounded-xl border border-kohl/10 bg-khadi-deep touch-manipulation"
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img
+                src={BANNER_BEDDING_IMAGE}
+                alt="Hand-block printed quilts layered on a bed"
+                className="h-full w-full object-cover transition-transform duration-[900ms] ease-fable group-hover:scale-[1.05]"
+              />
+            </div>
+            <div className="space-y-3 p-6 md:p-8">
+              <p className={`${EYEBROW} text-madder`}>House I · Jaipur</p>
+              <p className="font-serif text-xl leading-snug text-kohl md:text-2xl">
+                A winter razai is weighed before it is named — carded cotton,
+                tagai-stitched, heavy enough to hold a Jaipur January.
+              </p>
+              <span
+                className={`${EYEBROW} inline-flex items-center gap-2 border-b border-madder/50 pb-1 text-madder`}
+              >
+                Discover
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                  strokeWidth={1.5}
+                />
+              </span>
+            </div>
+          </a>
+
+          <a
+            href="/collections/fragrances"
+            className="group block overflow-hidden rounded-xl border border-kohl/10 bg-khadi-deep touch-manipulation"
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img
+                src={BANNER_RITUAL_IMAGE}
+                alt="Dhoop stick resting on a ceramic stand"
+                className="h-full w-full object-cover transition-transform duration-[900ms] ease-fable group-hover:scale-[1.05]"
+              />
+            </div>
+            <div className="space-y-3 p-6 md:p-8">
+              <p className={`${EYEBROW} text-madder`}>House II · Meerut</p>
+              <p className="font-serif text-xl leading-snug text-kohl md:text-2xl">
+                The hour before sleep asks for its own instrument — a single
+                hand-rolled stick, and the day is closed.
+              </p>
+              <span
+                className={`${EYEBROW} inline-flex items-center gap-2 border-b border-madder/50 pb-1 text-madder`}
+              >
+                Discover
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                  strokeWidth={1.5}
+                />
+              </span>
+            </div>
+          </a>
+        </Reveal>
+      </section>
+
+      {/* 7. Trust row — khadi-deep, madder accent dots */}
+      <section className="border-y border-kohl/10 bg-khadi-deep py-10">
+        <Reveal className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-6 text-center md:grid-cols-3">
+          {trustItems.map((item) => (
+            <div key={item} className="flex items-center justify-center gap-3">
+              <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-madder" />
+              <p className={`${EYEBROW} text-kohl`}>{item}</p>
+            </div>
+          ))}
+        </Reveal>
+      </section>
+
+      {/* 8. The Record — dark story band */}
+      <section className="bg-indigo-deep px-6 py-16 md:py-24">
+        <Reveal className="mx-auto flex max-w-7xl flex-col items-center gap-12 md:flex-row md:gap-16">
+          <div className="w-full md:w-1/2">
+            <div className="aspect-video overflow-hidden rounded-xl border border-indigo-edge">
+              <img
+                className="h-full w-full object-cover transition-transform duration-[900ms] ease-fable hover:scale-[1.05]"
+                src={STORY_IMAGE}
+                alt="Hand-block printed quilt hanging in natural light"
+              />
+            </div>
+          </div>
+          <div className="w-full space-y-5 md:w-1/2">
+            <p className={`${EYEBROW} text-khari`}>The Record</p>
+            <h2 className="text-h2 font-serif text-khadi">Kept by the Fable</h2>
+            <p className="text-base leading-relaxed text-dark-body md:text-lg">
+              In Jaipur the blocks are carved before the cloth is cut; in Meerut the
+              resin cures before a single hour is rolled. Every batch that leaves
+              either house is numbered, dated, and entered in the record — the object
+              you keep travels with its paperwork.
+            </p>
+            <div className="pt-2">
+              <a
+                href="/houses/ember"
+                className={`${EYEBROW} group inline-flex items-center gap-2 border-b border-khari/50 pb-1 text-ember transition-colors hover:text-khadi touch-manipulation`}
+              >
+                Read the Ember record
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                  strokeWidth={1.5}
+                />
               </a>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
-      {/* Most Loved Pieces Carousel */}
-      <section className="py-12 overflow-hidden max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-end mb-12">
-          <div className="max-w-xl space-y-2">
-            <p className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold">Customer Favorites</p>
-            <h2 className="text-3xl font-serif text-[#041534]">Our Most Loved Pieces</h2>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-10">
-            <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-stone-500 text-sm font-light">Updating favorites...</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.slice(0, 3).map((product) => {
-              const mainImage = product.images[0]?.src || '';
-              const firstVariant = product.variants[0] || { id: '', price: '0.00' };
-
-              return (
-                <div key={product.id} className="group flex flex-col gap-4 border border-stone-200 rounded-2xl p-4 bg-white hover:shadow-md transition">
-                  <div className="aspect-[4/5] bg-[#F5F0EA] rounded-xl overflow-hidden relative">
-                    <img 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" 
-                      src={mainImage} 
-                      alt={product.title} 
-                    />
-                    <button 
-                      onClick={() => addItem({
-                        id: firstVariant.id,
-                        title: product.title,
-                        variantTitle: 'Standard',
-                        price: firstVariant.price,
-                        quantity: 1,
-                        image: mainImage,
-                      })}
-                      className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm text-[#041534] px-6 py-3 text-xs uppercase tracking-widest font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-sm"
-                    >
-                      Add to Bag
-                    </button>
-                  </div>
-                  <div className="mt-2 space-y-1">
-                    <a href={`/products/${product.handle}`} className="text-lg font-serif text-[#041534] block hover:text-[#D4AF37] transition">
-                      {product.title}
-                    </a>
-                    <p className="text-sm text-[#D4AF37] font-semibold">
-                      ₹{Number(firstVariant.price).toLocaleString('en-IN')}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Trust Pillars */}
-      <section className="py-24 bg-[#041534] text-white rounded-3xl mx-6 border border-stone-200/10">
-        <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          <div className="space-y-12">
-            <div className="flex gap-6 items-start">
-              <div className="w-12 h-12 flex-shrink-0 bg-white/10 rounded-full flex items-center justify-center text-xl text-[#D4AF37]">
-                🍃
-              </div>
-              <div>
-                <h3 className="text-lg font-serif mb-2 text-white font-semibold">100% Organic Mulmul Cotton</h3>
-                <p className="text-stone-300 text-sm leading-relaxed font-light">
-                  Breathable, skin-gentle fabric certified for purity — designed specifically for the nuanced Indian climate.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start">
-              <div className="w-12 h-12 flex-shrink-0 bg-white/10 rounded-full flex items-center justify-center text-xl text-[#D4AF37]">
-                🎨
-              </div>
-              <div>
-                <h3 className="text-lg font-serif mb-2 text-white font-semibold">Azo-Free Dyes</h3>
-                <p className="text-stone-300 text-sm leading-relaxed font-light">
-                  Natural, safe dyes applied by master artisans. No harsh chemicals, just the pure essence of Jaipur's color palette.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative group">
-            <div className="absolute inset-0 border-2 border-[#D4AF37]/30 -m-4 transition-all duration-500 group-hover:m-0" />
-            <div className="bg-[#F5F0EA]/5 backdrop-blur-sm p-12 border border-white/10 relative z-10 text-center rounded-xl">
-              <p className="text-2xl font-serif italic mb-6 text-stone-200">"Like sleeping under a cloud."</p>
-              <p className="text-xs uppercase tracking-widest text-[#D4AF37] font-semibold">— Priya M., New Delhi</p>
-            </div>
-          </div>
+      {/* 9. Order lookup — slim khadi-deep band */}
+      <section className="border-t border-kohl/10 bg-khadi-deep">
+        <div className="mx-auto max-w-7xl px-6">
+          <OrderLookup />
         </div>
       </section>
-
-      {/* Community Testimonials Grid */}
-      <section className="py-12 max-w-7xl mx-auto px-6">
-        <div className="mb-16 text-center">
-          <p className="text-xs uppercase tracking-widest text-[#D4AF37] mb-2 font-semibold">Our Community</p>
-          <h2 className="text-3xl font-serif text-[#041534]">Loved Across India</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1 */}
-          <div className="bg-[#F5F0EA] p-8 rounded-2xl shadow-sm border border-stone-200/50">
-            <div className="flex gap-1 text-[#D4AF37] mb-4 text-sm">★★★★★</div>
-            <h4 className="text-lg font-serif text-[#041534] mb-3 font-semibold">Like sleeping under a cloud.</h4>
-            <p className="text-stone-600 text-sm font-light leading-relaxed mb-6">
-              "I was skeptical about how warm this quilt would be because it feels so light — but it is perfect even for Delhi winters."
-            </p>
-            <p className="text-xs uppercase tracking-widest text-[#D4AF37] font-bold">Priya M. — New Delhi</p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-[#F5F0EA] p-8 rounded-2xl shadow-sm border border-stone-200/50">
-            <div className="flex gap-1 text-[#D4AF37] mb-4 text-sm">★★★★★</div>
-            <h4 className="text-lg font-serif text-[#041534] mb-3 font-semibold">The most beautiful thing in our home.</h4>
-            <p className="text-stone-600 text-sm font-light leading-relaxed mb-6">
-              "Bought the Jodhpur Indigo Bedding Set as a housewarming gift for my sister and she absolutely loves it. The mul mul cotton is incredibly soft."
-            </p>
-            <p className="text-xs uppercase tracking-widest text-[#D4AF37] font-bold">Ananya R. — Bengaluru</p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-[#F5F0EA] p-8 rounded-2xl shadow-sm border border-stone-200/50">
-            <div className="flex gap-1 text-[#D4AF37] mb-4 text-sm">★★★★★</div>
-            <h4 className="text-lg font-serif text-[#041534] mb-3 font-semibold">Arrived beautifully packed.</h4>
-            <p className="text-stone-600 text-sm font-light leading-relaxed mb-6">
-              "The Saffron Paisley Kantha Throw now lives on our living room sofa. It is the first thing guests notice and compliment."
-            </p>
-            <p className="text-xs uppercase tracking-widest text-[#D4AF37] font-bold">Rohan P. — Hyderabad</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Concierge Portal Tracking */}
-      <div className="max-w-7xl mx-auto px-6">
-        <OrderLookup />
-      </div>
     </div>
   );
 }

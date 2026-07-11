@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { STORE_POLICIES } from '@/lib/policies';
 
 const DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || "i0ch0y-kq.myshopify.com";
 const ADMIN_TOKEN = process.env.SHOPIFY_ADMIN_TOKEN || "";
@@ -14,12 +15,16 @@ async function getPolicy(handle: string) {
         "Content-Type": "application/json",
       },
     });
-    if (!res.ok) return null;
+    if (!res.ok) return STORE_POLICIES[handle] || null;
     const data = await res.json();
     const policies = data.policies || [];
-    return policies.find((p: any) => p.handle === handle || p.title.toLowerCase().replace(/\s+/g, '-') === handle);
+    return (
+      policies.find((p: any) => p.handle === handle || p.title.toLowerCase().replace(/\s+/g, '-') === handle) ||
+      STORE_POLICIES[handle] ||
+      null
+    );
   } catch (err) {
-    return null;
+    return STORE_POLICIES[handle] || null;
   }
 }
 

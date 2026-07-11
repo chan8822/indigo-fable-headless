@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ZoomIn } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
 
 interface Variant {
   id: string;
@@ -28,6 +30,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
   const { addItem } = useCart();
+  const { formatPrice } = useRegion();
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
     product.variants[0] || { id: '0', title: 'Default', price: '0' }
   );
@@ -64,7 +67,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
           onClick={() => onOpenZoom(product.images, activeImgIndex)}
           className="absolute bottom-4 right-4 bg-indigo-950/80 hover:bg-indigo-950 text-gold-400 text-xs px-3 py-1.5 rounded-lg border border-gold-500/30 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          🔍 Zoom View
+          <span className="flex items-center gap-1.5"><ZoomIn className="h-3.5 w-3.5" strokeWidth={1.5} /> Zoom View</span>
         </button>
       </div>
 
@@ -93,7 +96,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
               {product.vendor}
             </span>
             <span className="text-lg font-serif font-semibold text-indigo-950">
-              ₹{Number(selectedVariant.price).toLocaleString('en-IN')}
+              {formatPrice(selectedVariant.price)}
             </span>
           </div>
           <h3 className="text-xl font-serif text-indigo-950 group-hover:text-gold-500 transition-colors leading-snug">
@@ -134,7 +137,7 @@ export function ProductCard({ product, onOpenZoom }: ProductCardProps) {
             onClick={handleAddToCart}
             className="flex-1 bg-indigo-950 hover:bg-indigo-900 text-stone-100 py-3.5 px-6 rounded-xl font-medium tracking-wider uppercase text-xs transition duration-300 shadow-md flex items-center justify-center space-x-2"
           >
-            <span>Add to Bag — ₹{Number(selectedVariant.price).toLocaleString('en-IN')}</span>
+            <span>Add to Bag — {formatPrice(selectedVariant.price)}</span>
           </button>
         </div>
       </div>

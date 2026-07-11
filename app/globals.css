@@ -4,10 +4,50 @@
 
 @layer base {
   body {
-    @apply bg-stone-50 text-stone-900 antialiased selection:bg-gold-400 selection:text-indigo-950;
+    @apply bg-khadi font-sans text-kohl antialiased;
+  }
+  ::selection {
+    @apply bg-madder text-khadi;
+  }
+  h1, h2, h3 {
+    font-family: theme('fontFamily.serif');
+    font-optical-sizing: auto;
+  }
+  /* A11y floor — design-system.md §1.4 */
+  :focus-visible {
+    outline: 2px solid #8E3B2E;
+    outline-offset: 3px;
   }
 }
 
-.luxury-gradient {
-  background: linear-gradient(135deg, #0d1137 0%, #1a237e 100%);
+@layer utilities {
+  /* Scroll reveal — §1.3. Toggled by data-revealed via IntersectionObserver. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal[data-revealed='true'] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .eyebrow {
+    @apply font-mono uppercase text-mono-micro;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .smoke-thread path {
+    stroke-dasharray: none !important;
+    animation: none !important;
+  }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

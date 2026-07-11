@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import { X, PenLine, Lock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useRegion } from '@/context/RegionContext';
+import { RegionPaymentBadges } from '@/components/RegionSwitcher';
+import { buildCheckoutUrl } from '@/lib/region';
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, totalPrice } = useCart();
+  const { region, formatPrice } = useRegion();
   const [giftNote, setGiftNote] = useState('');
 
   const DOMAIN = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || "i0ch0y-kq.myshopify.com";
@@ -12,7 +17,7 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (items.length === 0) return;
     const cartParts = items.map(item => `${item.id.replace('gid://shopify/ProductVariant/', '')}:${item.quantity}`).join(',');
-    window.location.href = `https://${DOMAIN}/cart/${cartParts}`;
+    window.location.href = buildCheckoutUrl(DOMAIN, cartParts, region);
   };
 
   return (
@@ -57,7 +62,7 @@ export default function CartPage() {
                         aria-label="Remove item" 
                         className="text-stone-400 hover:text-red-600 transition-colors touch-manipulation"
                       >
-                        <span className="text-xl">✕</span>
+                        <X className="h-5 w-5" strokeWidth={1.5} />
                       </button>
                     </div>
                     {item.variantTitle && (
@@ -84,7 +89,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <p className="text-base font-serif text-[#0F172A]">
-                      ₹{(Number(item.price) * item.quantity).toLocaleString('en-IN')}
+                      {formatPrice(Number(item.price) * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -94,7 +99,7 @@ export default function CartPage() {
             {/* Gift Message Section */}
             <div className="mt-4 p-6 bg-[#F5F0EA] rounded-xl border border-stone-200">
               <div className="flex items-center gap-2 mb-4 text-[#0F172A]">
-                <span className="text-xl">📝</span>
+                <PenLine className="h-5 w-5" strokeWidth={1.5} />
                 <h4 className="text-base font-serif font-semibold">Add a Gift Message or Note</h4>
               </div>
               <textarea 
@@ -113,7 +118,7 @@ export default function CartPage() {
               <div className="space-y-4 text-sm text-[#0F172A] border-b border-stone-200 pb-6 mb-6">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold">₹{totalPrice.toLocaleString('en-IN')}</span>
+                  <span className="font-semibold">{formatPrice(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between text-stone-500">
                   <span>Shipping</span>
@@ -126,17 +131,20 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-lg font-serif text-[#0F172A] mb-8">
                 <span>Estimated Total</span>
-                <span className="font-semibold text-xl">₹{totalPrice.toLocaleString('en-IN')}</span>
+                <span className="font-semibold text-xl">{formatPrice(totalPrice)}</span>
               </div>
               <button 
                 onClick={handleCheckout}
                 className="w-full bg-[#041534] hover:bg-[#0c244c] text-white text-xs uppercase tracking-[0.2em] py-4 rounded font-semibold flex items-center justify-center gap-2 transition shadow touch-manipulation"
               >
-                🔒 SECURE CHECKOUT
+                <Lock className="h-3.5 w-3.5" strokeWidth={2} /> SECURE CHECKOUT
               </button>
               <p className="text-xs text-stone-500 text-center mt-4">
-                Taxes and shipping calculated at checkout.
+                {region.shippingNote}
               </p>
+              <div className="mt-4 flex justify-center">
+                <RegionPaymentBadges tone="light" />
+              </div>
 
               {/* Complimentary Gift Wrap Upsell */}
               <div className="mt-8 pt-8 border-t border-stone-200 flex gap-4 items-start">
