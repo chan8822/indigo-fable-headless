@@ -41,7 +41,9 @@ export default function BundleBuilderPage() {
     p.handle.includes('rajai') ||
     p.title.toLowerCase().includes('quilt')
   );
-  const scents = products.filter(p => p.handle.includes('incense') || p.handle.includes('dhoop'));
+  const scents = products.filter(p =>
+    p.handle.includes('incense') || p.handle.includes('dhoop') || p.handle.startsWith('ember-')
+  );
 
   // Scent recommendation mapping logic
   const getRecommendedScent = (quilt: ShopifyProduct) => {

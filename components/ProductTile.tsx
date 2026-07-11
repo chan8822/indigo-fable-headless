@@ -16,9 +16,9 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
   const isFragrance =
     handle.includes('incense') ||
     handle.includes('dhoop') ||
+    handle.startsWith('ember-') ||
     (product.tags ? product.tags.some((t) => t.includes('fragrance-type')) : false);
-  const badge =
-    handle.includes('incense') || handle.includes('dhoop') ? 'Charcoal-Free' : 'Hand-Crafted';
+  const badge = isFragrance ? 'Charcoal-Free' : 'Hand-Crafted';
 
   const primaryImage = product.images[0]?.src || '';
   const secondaryImage = product.images[1]?.src || '';

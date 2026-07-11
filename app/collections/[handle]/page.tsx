@@ -54,7 +54,10 @@ export default function CollectionPage({ params }: { params: { handle: string } 
         return (
           p.handle.includes('incense') ||
           p.handle.includes('dhoop') ||
-          (p.tags ? p.tags.some((t: string) => t.includes('fragrance-type')) : false)
+          p.handle.startsWith('ember-') ||
+          (p.tags
+            ? p.tags.some((t: string) => t.includes('fragrance-type') || t === 'house:ember')
+            : false)
         );
       }
       if (group === 'quilts') {
