@@ -39,7 +39,7 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
 
   return (
     <div className="group">
-      <div className="relative overflow-hidden rounded-xl border border-stone-200/70 hover:border-gold-500/40 transition-colors duration-300 bg-stone-100">
+      <div className="relative overflow-hidden rounded-xl border border-kohl/10 hover:border-madder/50 transition-colors duration-300 bg-khadi-deep">
         <Link
           href={`/products/${product.handle}`}
           className="block aspect-[3/4] touch-manipulation"
@@ -52,7 +52,7 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.2em] text-stone-400">
+            <div className="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.2em] text-kohl-soft">
               Image Coming Soon
             </div>
           )}
@@ -66,7 +66,7 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
         </Link>
 
         {/* Craft badge */}
-        <span className="absolute left-3 top-3 bg-indigo-950/90 text-gold-300 text-[9px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full pointer-events-none">
+        <span className="absolute left-3 top-3 bg-indigo-deep/90 text-ember font-mono text-[9px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full pointer-events-none">
           {badge}
         </span>
 
@@ -76,16 +76,16 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
             type="button"
             onClick={() => setWishlisted((w) => !w)}
             aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-sm text-indigo-950 hover:text-gold-600 transition-colors touch-manipulation"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-khadi/90 backdrop-blur shadow-sm text-kohl hover:text-madder transition-colors touch-manipulation"
           >
             <Heart
-              className={`h-4 w-4 ${wishlisted ? 'fill-gold-400 text-gold-400' : ''}`}
+              className={`h-4 w-4 ${wishlisted ? 'fill-madder text-madder' : ''}`}
             />
           </button>
           <Link
             href={`/products/${product.handle}`}
             aria-label={`View ${product.title}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-sm text-indigo-950 hover:text-gold-600 transition-colors touch-manipulation"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-khadi/90 backdrop-blur shadow-sm text-kohl hover:text-madder transition-colors touch-manipulation"
           >
             <Eye className="h-4 w-4" />
           </Link>
@@ -95,26 +95,26 @@ export function ProductTile({ product }: { product: ShopifyProduct }) {
         <button
           type="button"
           onClick={handleQuickAdd}
-          className="absolute bottom-0 inset-x-0 w-full bg-indigo-950/95 text-stone-50 py-3 text-[11px] uppercase tracking-[0.2em] font-semibold translate-y-full group-hover:translate-y-0 max-lg:translate-y-0 transition-transform duration-300 hover:bg-indigo-900 touch-manipulation"
+          className="absolute bottom-0 inset-x-0 w-full bg-kohl/95 text-khadi py-3 font-mono text-[10.5px] uppercase tracking-[0.22em] translate-y-full group-hover:translate-y-0 max-lg:translate-y-0 transition-transform duration-300 hover:bg-kohl touch-manipulation"
         >
           Add to Bag
         </button>
       </div>
 
       <div className="mt-4 space-y-1">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-stone-400">
+        <p className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-kohl-soft">
           {product.vendor || 'The Indigo Fable'}
         </p>
         <Link
           href={`/products/${product.handle}`}
-          className="block text-base font-serif text-indigo-950 hover:text-gold-600 transition-colors line-clamp-1 touch-manipulation"
+          className="block text-base font-serif text-kohl hover:text-madder transition-colors line-clamp-1 touch-manipulation"
         >
           {product.title}
         </Link>
         <p className="flex items-baseline gap-2">
-          <span className="font-semibold text-indigo-950">{formatPrice(variant.price)}</span>
+          <span className="font-mono text-kohl">{formatPrice(variant.price)}</span>
           {!isFragrance && (
-            <span className="text-sm text-stone-400 line-through">
+            <span className="font-mono text-sm text-kohl-soft/70 line-through">
               {formatPrice(price * 1.25)}
             </span>
           )}
