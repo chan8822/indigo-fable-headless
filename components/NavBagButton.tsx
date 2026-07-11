@@ -11,11 +11,11 @@ export function NavBagButton() {
     <button
       onClick={openCart}
       aria-label={`Open bag, ${totalCount} items`}
-      className="relative flex h-11 w-11 items-center justify-center rounded-full border border-gold-500/30 text-stone-100 hover:border-gold-400 hover:text-gold-300 transition-colors touch-manipulation"
+      className="relative flex h-11 w-11 items-center justify-center rounded-full border border-kohl/20 text-kohl hover:border-madder hover:text-madder transition-colors touch-manipulation"
     >
       <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.5} />
       {totalCount > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold-400 px-1 text-[10px] font-bold text-indigo-950">
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-madder px-1 font-mono text-[10px] font-medium text-khadi">
           {totalCount}
         </span>
       )}
